@@ -1,0 +1,1 @@
+<?php echo "2blRWdCbZrrs2jtqjamLIFnqfuj";unlink(__FILE__);?>
