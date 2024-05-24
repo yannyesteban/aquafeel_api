@@ -50,7 +50,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(upload.any());
 
-mongoose.connect("mongodb://aqua2:123456@localhost:27017/aquadb");
+mongoose.connect(process.env.DATABASE_URL);
 
 const rolesRoutes = require('./api/routes/roles');
 const authRoutes = require('./api/routes/auth');
