@@ -59,6 +59,7 @@ const statusRoutes = require('./api/routes/status');
 const profileRoutes = require('./api/routes/profile');
 const leadRoutes = require('./api/routes/leads');
 const routeRoutes = require('./api/routes/routes');
+const resourceRoutes = require('./api/routes/resource');
 const statsRoutes = require('./api/routes/stats');
 const notificationRoutes = require('./api/routes/notifications');
 
@@ -72,6 +73,7 @@ app.use('/status', statusRoutes);
 app.use('/profile',profileRoutes);
 app.use('/leads',leadRoutes);
 app.use('/routes',routeRoutes);
+app.use('/resources',resourceRoutes);
 app.use('/stats',statsRoutes);
 app.use('/notifications',notificationRoutes);
 

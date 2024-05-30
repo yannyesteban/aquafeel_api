@@ -88,6 +88,92 @@ module.exports.list = async (req, res, next) => {
 	}
 }
 
+module.exports.list2 = async (req, res, next) => {
+
+	
+	try {
+		const {
+			field,
+			fromDate,
+			toDate,
+			status_id,
+			limit = 10,
+			offset = 0,
+			search_key,
+			search_value,
+			quickDate,
+			orderBy = null,
+		} = req.query
+
+		let cond = {
+			created_by: req.query.user_id
+		};
+
+		if (req.query.favorite === "true"){
+			cond.favorite = true
+		}
+		if (req.query.today === "true") {
+			const now = new Date();
+			const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+			cond.created_on = {
+				$gte: today
+			}
+		}
+		//search
+		if (search_key === "all") {
+			cond = {
+				...cond,
+				$or: [{
+					first_name: new RegExp(`${search_value}`, 'i')
+				}, {
+					last_name: new RegExp(`${search_value}`, 'i')
+				}, {
+					street_address: new RegExp(`${search_value}`, 'i')
+				}, {
+					state: new RegExp(`${search_value}`, 'i')
+				}, {
+					city: new RegExp(`${search_value}`, 'i')
+				}, {
+					zip: new RegExp(`${search_value}`, 'i')
+				}]
+			}
+		} else if (search_key && search_value) {
+			cond = {
+				...cond,
+				[search_key]: new RegExp(`${search_value}`, 'i')
+			};
+		}
+
+		//filter
+		if (status_id) {
+			cond = {
+				...cond,
+				status_id: { $in: status_id.split(",") }
+			}
+		}
+		if (field && quickDate !== "all_time") {
+			const {_fromDate, _toDate} = generateDateRange(quickDate, fromDate, toDate)
+			cond[field] = {
+				$gte: _fromDate,
+				$lte: _toDate
+			}
+		}
+		const count = await Leads.count(cond)
+		const leads = await Leads.find(cond)
+			.limit(parseInt(limit))
+			.skip(parseInt(offset))
+			.sort({ created_on: -1, _id: -1 })
+			.populate("status_id");
+		res.status(200).json({
+			leads,
+			count
+		})
+	}
+	catch (e) {
+		res.status(400).json(e)
+	}
+}
+
 module.exports.listAll = async (req, res, next) => {
 	try {
 		const {
@@ -103,7 +189,7 @@ module.exports.listAll = async (req, res, next) => {
 			quickDate
 		} = req.query
 
-		console.log("..... list All")
+		
 		let cond = {};
 		if (req.user.role === "MANAGER") {
 			const userInfo = await User.findById(req.user.id);

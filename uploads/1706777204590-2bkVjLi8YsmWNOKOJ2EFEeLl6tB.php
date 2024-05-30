@@ -1,1 +1,0 @@
-<?php echo md5("core-chuangtian-cloud"); ?>

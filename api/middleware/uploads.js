@@ -18,6 +18,16 @@ checkMimeType = (files) => {
 }
 
 
+checkMimePDFType = (files) => {
+
+    let mimeTypeValidation = true;
+    files.forEach(file => {
+        if (!(file.mimetype === 'application/pdf'))
+            mimeTypeValidation = false;
+    })
+    return mimeTypeValidation;
+}
+
 
 module.exports.upload = async (req, res, next) => {
     try {
@@ -29,7 +39,25 @@ module.exports.upload = async (req, res, next) => {
         if (!checkMimeType(req.files))
             return res.status(400).json({ message: "invalid file type" })
 
-        upload.single('image') 
+        upload.single('image')
+        next();
+    }
+    catch (e) {
+        res.status(400).json(e)
+    }
+}
+
+module.exports.uploadPDF = async (req, res, next) => {
+    try {
+        // check file
+        if (!checkFile(req))
+            return res.status(400).json({ message: "No image provided" })
+
+        // check mimeType
+        if (!checkMimePDFType(req.files))
+            return res.status(400).json({ message: "invalid file type" })
+
+        upload.single('image')
         next();
     }
     catch (e) {
