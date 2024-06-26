@@ -146,7 +146,11 @@ module.exports.add = async (req, res) => {
 
 module.exports.edit = async (req, res, next) => {
 	try {
+		
+
 		const orderData = req.body;
+
+		console.log( orderData )
 		const id = orderData._id;
 		//orderData._id = undefined
 

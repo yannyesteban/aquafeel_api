@@ -1,5 +1,15 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
+const approvalSchema = new Schema(
+  {
+
+    purchaser: { type: String, required: false },
+    date: { type: Date, required: false }
+    
+  }, { _id: false }
+);
+
 const buyerSchema = new Schema(
   {
 
@@ -21,6 +31,7 @@ const installSchema = new Schema(
   {
     day: { type: String, required: false },
     date: { type: Date, required: false },
+    waterSouce : { type: String, required: false },
     iceMaker: { type: Boolean, required: false },
     time: { type: Number, required: false },
   }, { _id: false }
@@ -40,6 +51,7 @@ const priceSchema = new Schema(
     taxes: { type: Number, required: false },
     totalCash: { type: Number, required: false },
     downPayment: { type: Number, required: false },
+    totalCashPrice: { type: Number, required: false },
     toFinance: { type: Number, required: false },
     terms: { type: termsSchema, required: false },
     APR: { type: Number, required: false },
@@ -57,16 +69,22 @@ const orderSchema = new Schema(
     zip: { type: String, required: false },
     system1: { type: systemSchema, required: false },
     system2: { type: systemSchema, required: false },
+    promotion: { type: String, required: false },
     installation: { type: installSchema, required: false },
     people: { type: Number, required: false },
+    floorType: { type: String, required: false },
     creditCard: { type: Boolean, required: false },
     check: { type: Boolean, required: false },
     price: { type: priceSchema, required: false },
+    approval1 : { type: approvalSchema, required: false },
+    approval2 : { type: approvalSchema, required: false },
+    employee : { type: String, required: false },
+    approvedBy : { type: String, required: false },
     createdBy:{
       type: String,
       ref: "Users",
       required: true
-  },
+    },
     createdOn: {
       type: Date,
       default: Date.now
