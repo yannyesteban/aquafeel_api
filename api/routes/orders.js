@@ -12,6 +12,6 @@ router.delete("/delete", orderController.delete);
 router.get("/get", orderController.details);
 router.get("/details", orderController.details);
 
-
+router.get("/pdf", orderController.pdf);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const Order = require('../models/order');
-
+const PDFDocument = require('pdfkit');
 
 module.exports.list = async (req, res, next) => {
 
@@ -190,3 +190,42 @@ module.exports.delete = async (req, res, next) => {
 	}
 
 }
+
+module.exports.pdf = async (req, res, next) => {
+    try {
+
+
+		//let id = req.query.id;
+		let id = "66730d4aea6a70a21222bd34";
+        let order = await Order.findOne({ _id: id });
+
+        // Crear una nueva instancia de PDFDocument
+        const doc = new PDFDocument();
+
+        // Configurar el encabezado de respuesta para enviar un PDF
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=order.pdf');
+
+        // Pipe del PDF a la respuesta HTTP
+        doc.pipe(res);
+
+        // Agregar contenido al PDF
+        doc.fontSize(25).text('Detalles de la Orden', { align: 'center' });
+
+        // Agregar detalles de la orden
+        doc.moveDown();
+        doc.fontSize(14).text(`ID de la Orden: ${order._id}`);
+        doc.text(`Cliente: ${order.city}`);
+        doc.text(`Total: $${order.city}`);
+        doc.text(`Fecha: ${order.city}`);
+
+        // Agregar una línea
+        doc.moveDown().moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+
+        // Finalizar el documento
+        doc.end();
+    } catch (e) {
+		console.log(e)
+        res.status(400).json(e);
+    }
+};
