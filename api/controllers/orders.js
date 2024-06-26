@@ -196,7 +196,7 @@ module.exports.pdf = async (req, res, next) => {
 
 
 		//let id = req.query.id;
-		let id = "66730d4aea6a70a21222bd34";
+		let id = "667c62fa99db989127642954";
         let order = await Order.findOne({ _id: id });
 
         // Crear una nueva instancia de PDFDocument
