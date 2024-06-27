@@ -56,6 +56,7 @@ const priceSchema = new Schema(
     terms: { type: termsSchema, required: false },
     APR: { type: Number, required: false },
     finaceCharge: { type: Number, required: false },
+    totalPayments: { type: Number, required: false },
   }, { _id: false }
 );
 

@@ -176,6 +176,7 @@ module.exports.edit = async (req, res, next) => {
 			{ new: true }
 		);
 
+		//console.log({ data: order, message: "Order added correctly!" })
 		res.status(201).json({ data: order, message: "Order added correctly!" });
 	} catch (e) {
 		console.log(e);
@@ -188,6 +189,7 @@ module.exports.delete = async (req, res, next) => {
 	let deletedOrder = await Order.deleteOne({ _id: id });
 
 	if (deletedOrder.deletedCount > 0) {
+		
 		res.status(200).json({
 			data: deletedOrder,
 			message: "Order deleted successfully",
@@ -275,7 +277,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 	const noteFontSize = 7;
 	const startX = 15;
 	const startY = 25;
-	
+
 	const rowHeight = 22;
 
 	try {
@@ -384,14 +386,14 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			//headers: [],
 			rows: [
 				[
-					`Name: \n  ${order.system1.name}`,
-					`Brand: \n  ${order.system1.brand}`,
-					`Model: \n  ${order.system1.model}`,
+					`Name: ${order.system1.name}`,
+					`Brand: ${order.system1.brand}`,
+					`Model: ${order.system1.model}`,
 				],
 				[
-					`Name: \n  ${order.system2.name}`,
-					`Brand: \n  ${order.system2.brand}`,
-					`Model: \n  ${order.system2.model}`,
+					`Name: ${order.system2.name}`,
+					`Brand: ${order.system2.brand}`,
+					`Model: ${order.system2.model}`,
 				],
 				//[`Other \n  ${order.promotion}`, ``, ``],
 			],
@@ -410,8 +412,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		const data9 = {
 			//headers: [],
 			rows: [
-				
-				[`Other \n  ${order.promotion}`],
+
+				[`Other / Promotion: ${order.promotion}`],
 			],
 		};
 
@@ -427,7 +429,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 
 
-		
+
 		//doc.moveDown();
 		//doc.fontSize(cellFontSize).text(text1, { align: "center" });
 
@@ -557,8 +559,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					order.price.toFinance,
 					`${order.price.terms.amount}, ${order.price.terms.amount}`,
 					order.price.APR,
-					order.price.financeCharge,
-					5.555,
+					order.price.finaceCharge,
+					order.price.totalPayments,
 				],
 			],
 		};
