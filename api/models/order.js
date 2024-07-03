@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const approvalSchema = new Schema(
   {
 
-    purchaser: { type: String, required: false },
+    name: { type: String, required: false },
+    signature: { type: Buffer, required: false },
     date: { type: Date, required: false }
     
   }, { _id: false }
@@ -16,6 +17,8 @@ const buyerSchema = new Schema(
     name: { type: String, required: false },
     phone: { type: String, required: false },
     cel: { type: String, required: false },
+    signature: { type: Buffer, required: false },
+    date: { type: Date, required: false }
   }, { _id: false }
 );
 
@@ -77,10 +80,12 @@ const orderSchema = new Schema(
     creditCard: { type: Boolean, required: false },
     check: { type: Boolean, required: false },
     price: { type: priceSchema, required: false },
-    approval1 : { type: approvalSchema, required: false },
-    approval2 : { type: approvalSchema, required: false },
-    employee : { type: String, required: false },
-    approvedBy : { type: String, required: false },
+    //approval1 : { type: approvalSchema, required: false },
+    //approval2 : { type: approvalSchema, required: false },
+    employee : { type: approvalSchema, required: false },
+    approvedBy : { type: approvalSchema, required: false },
+    //signature1: { type: Buffer, required: false }, // Added signature field
+    //signature2: { type: Buffer, required: false }, // Added signature field
     createdBy:{
       type: String,
       ref: "Users",

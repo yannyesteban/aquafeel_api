@@ -83,16 +83,48 @@ module.exports.list = async (req, res, next) => {
 
 		console.log({ cond });
 		const count = await Order.count(cond);
-		const orders = await Order.find(cond)
+		let orders = await Order.find(cond)
 			.limit(parseInt(limit))
 			.skip(parseInt(offset))
-			.sort({ created_on: -1, _id: -1 });
+			.sort({ created_on: -1, _id: -1 })
+			.lean();
+
+		;
 		//.populate("status_id");
-		console.log(
-			orders.map((o) => {
-				return { city: "yanny" };
-			})
-		);
+
+
+
+		/*
+		orders = orders.map((order) => {
+			order.zip = "45600"
+	
+			let value = ""
+			if (order.buyer1 && order.buyer1.signature) {
+				
+				value = order.buyer1.signature.toString("base64");
+				console.log(value)
+			}
+			order.buyer1.signature = value//order.buyer1.signature.toString("base64");
+			
+			if (order.buyer1 && order.buyer1.signature) {
+					order.order.buyer1.signature = order.buyer1.signature.toString("base64");
+			}
+			if (order.buyer2 && order.buyer2.signature) {
+			  order.buyer2.signature = order.buyer2.signature.toString("base64");
+			} else {
+				order.buyer2.signature = "..";
+			}
+			if (order.employee && order.employee.signature) {
+			  order.employee.signature = order.employee.signature.toString("base64");
+			}
+			if (order.approvedBy && order.approvedBy.signature) {
+			  order.approvedBy.signature = order.approvedBy.signature.toString("base64");
+			}
+			return order;
+		  });
+	*/
+		console.log(orders)
+
 		res.status(200).json({
 			//data: orders.map((o)=>{return {id:o.id, buyer1:o.buyer1, system1:o.system1, price: o.price}; }),
 			data: orders,
@@ -122,31 +154,58 @@ module.exports.add = async (req, res) => {
 		const orderData = req.body;
 		orderData._id = undefined;
 
-		(orderData.createdOn = Date.now()),
-			(orderData.updatedOn = Date.now()),
-			(orderData.createdBy = req.body.user_id || "xxxx");
+		orderData.buyer1.signature = Buffer.from(
+			orderData.buyer1.signature,
+			"base64"
+		);
+		orderData.buyer2.signature = Buffer.from(
+			orderData.buyer2.signature,
+			"base64"
+		);
+
+		orderData.employee.signature = Buffer.from(
+			orderData.employee.signature,
+			"base64"
+		);
+		orderData.approvedBy.signature = Buffer.from(
+			orderData.approvedBy.signature,
+			"base64"
+		);
+
+		orderData.createdOn = Date.now();
+		orderData.updatedOn = Date.now();
+		orderData.createdBy = req.body.user_id || "xxxx";
 
 		/*if (orderData.system1){
-						orderData.system1._id = undefined
-					}
-					if (orderData.system2){
-						orderData.system2._id = undefined
-					}
-			
-					if (orderData.buyer1){
-						orderData.buyer1._id = undefined
-					}
-			
-					if (orderData.buyer2){
-						orderData.buyer2._id = undefined
-					}
-					console.log(orderData);
-					orderData.installation._id = undefined
-					orderData.price._id = undefined
-					orderData.price.terms._id = undefined
-					*/
+							orderData.system1._id = undefined
+						}
+						if (orderData.system2){
+							orderData.system2._id = undefined
+						}
+				
+						if (orderData.buyer1){
+							orderData.buyer1._id = undefined
+						}
+				
+						if (orderData.buyer2){
+							orderData.buyer2._id = undefined
+						}
+						console.log(orderData);
+						orderData.installation._id = undefined
+						orderData.price._id = undefined
+						orderData.price.terms._id = undefined
+						*/
 		const newOrder = new Order(orderData);
 		await newOrder.save();
+
+		newOrder.buyer1.signature = newOrder.buyer1.signature.toString("base64");
+		newOrder.buyer2.signature = newOrder.buyer2.signature.toString("base64");
+		newOrder.employee.signature = newOrder.employee.signature.toString("base64");
+		newOrder.approvedBy.signature = newOrder.approvedBy.signature.toString("base64");
+
+
+		console.log({ data: newOrder, message: "record added correctly!" })
+
 		res
 			.status(201)
 			.send({ data: newOrder, message: "record added correctly!" });
@@ -163,6 +222,24 @@ module.exports.edit = async (req, res, next) => {
 		console.log(orderData);
 		const id = orderData._id;
 		//orderData._id = undefined
+
+		orderData.buyer1.signature = Buffer.from(
+			orderData.buyer1.signature,
+			"base64"
+		);
+		orderData.buyer2.signature = Buffer.from(
+			orderData.buyer2.signature,
+			"base64"
+		);
+
+		orderData.employee.signature = Buffer.from(
+			orderData.employee.signature,
+			"base64"
+		);
+		orderData.approvedBy.signature = Buffer.from(
+			orderData.approvedBy.signature,
+			"base64"
+		);
 
 		//orderData.createdOn = Date.now(),
 		(orderData.updatedOn = Date.now()),
@@ -189,7 +266,6 @@ module.exports.delete = async (req, res, next) => {
 	let deletedOrder = await Order.deleteOne({ _id: id });
 
 	if (deletedOrder.deletedCount > 0) {
-		
 		res.status(200).json({
 			data: deletedOrder,
 			message: "Order deleted successfully",
@@ -248,8 +324,10 @@ module.exports.pdf = async (req, res, next) => {
 	const TEXT_230_Capcom =
 		"230 Capcom Ave Ste. 103, Wake Forest NC 27587 - Ph (919) 790-5475 - Fax (919) 790-5476 \nwww.aquafeelmaryland.com - info@aquafeelvirginia.com";
 
-	const UPON_SIGNING = "Upon signing, you acknowledge you agree to the terms and conditions of this contract. You agreed to all payments and charges and to the sales price appearing bellow."
-	const DO_NOT_SIGNED = "DO NOT SIGNED THIS CONTRACT UNTILL YOU HAVE READ IT ALL OF THE BLANK SPACES ARE COMPLETED. YOU HAVE THE RIGHT TO RECEIVE A COMPLETE COPY OF THIS CONTRACT. YOU HAVE THE RIGHT TO PREPAY FULL AMOUNT AT ANY TIME AND TO BE NOTIFIED OF THE FULL AMOUNT DUE."
+	const UPON_SIGNING =
+		"Upon signing, you acknowledge you agree to the terms and conditions of this contract. You agreed to all payments and charges and to the sales price appearing bellow.";
+	const DO_NOT_SIGNED =
+		"DO NOT SIGNED THIS CONTRACT UNTILL YOU HAVE READ IT ALL OF THE BLANK SPACES ARE COMPLETED. YOU HAVE THE RIGHT TO RECEIVE A COMPLETE COPY OF THIS CONTRACT. YOU HAVE THE RIGHT TO PREPAY FULL AMOUNT AT ANY TIME AND TO BE NOTIFIED OF THE FULL AMOUNT DUE.";
 	const termsAndConditions = `OTHER TERMS AND CONDITIONS
 STATE LAW REQUIRES THAT ANYONE WHO CONTRACTS TO DO CONSTRUCTION WORK TO BE LICENSED BY THE CONTRACTORS STATE LICENSE BOARD IN THE LICENSE CATEGORY IN WHICH THE CONTRACTOR IS GOING TO BE WORKING- IF THE TOTAL PRICE OF THE JOB IS $500 OR MORE (INCLUDING LABOR AND MATERIALS). LICENSED CONTRACTORS ARE REGULATED BY LAWS DESIGNED TO PROTECT THE PUBLIC. IF YOU CONTRACT WITH SOMEONE WHO DOES NOT HAVE A LICENSE, THE CONTRACTORS STATE LICENSE BOARD MAY BE UNABLE TO ASSIST YOU WITH A COMPLAINT. YOUR ONLY REMEDY AGAINST UNLICENSED CONTRACTOR MAY BE IN CIVIL COURT AND YOU MAY BE LIABLE FOR DAMAGES ARISING OUT OF ANY INJURIES TO THE CONTRACTOR OR HIS OR HER EMPLOYEES. YOU MAY CONTACT THE CONTRACTORS STATE LICENSE BOARD TO FIND OUT IF THIS CONTRACTOR HAS A VALID LICENSE. THE BOARD HAS COMPLETE INFORMATION ON THE HISTORY OF LICENSED CONTRACTORS, INCLUDING ANY POSSIBLE SUSPENSIONS, REVOCATIONS, JUDGMENTS, AND CITATIONS. SEARCH IN THE WHITE PAGES FOR CONTRACTORS STATE LICENSE BOARD OFFICE NEAREST TO YOU.
 1. The tittle to the equipment and materials covered in this Contract shall remain the legal property of Aquafeel Solutions, until the equipment and materials are paid in full. You acknowledge that you are giving a security interest in the goods purchased. The Buyer(s) hereby agrees that there is no written agreement or verbal understanding of any kind or nature, with Aquafeel Solutions, or any of its representatives, whereby this Contract, or any part of it is be altered, modified, or varied in any manner whatsoever from the conditions herein. The terms and conditions of this Contract are complete and exclusive statement of the agreements between the parties, constitute the entire agreement, and supersede and cancel all prior or contemporaneous negotiations, statements, and representations. There are no representations, inducements, promises, or agreements, oral or otherwise, with reference to this sale other than expressly set forth herein. If it is not in writing, and approved by employed management personnel at Aquafeel Solutions, it will not be honored.
@@ -269,7 +347,6 @@ Aquafeel Solutions
 I hereby cancel this transaction:
 Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Buyer’sSignature:________________________`;
 
-
 	const fontSize = 10;
 	const fontTitle = 9;
 	const bodyWidth = 585;
@@ -287,7 +364,6 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		if (!order) {
 			return res.status(404).json({ message: "Order not found" });
 		}
-
 
 		const doc = new PDFDocument({ size: "LETTER", autoFirstPage: false });
 
@@ -334,8 +410,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					`BUYER 2: ${order.buyer2.name}`,
 					`PHONE 2: ${order.buyer2.phone}`,
 					`CEL: ${order.buyer2.cel}`,
-				]
-
+				],
 			],
 		};
 
@@ -352,13 +427,12 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		const data7 = {
 			//headers: [],
 			rows: [
-
 				[
 					`ADDRESS: ${order.address}`,
 					`CITY: ${order.city}`,
 					`STATE: ${order.state}`,
 					`ZIP: ${order.zip}`,
-				]
+				],
 			],
 		};
 
@@ -371,9 +445,6 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[275, 110, 110, 90],
 			rowHeight
 		);
-
-
-
 
 		doc.fontSize(noteFontSize).text("", startX, startY + rowHeight * 7.1);
 		//doc.fontSize(noteFontSize).text(text1, startX, startY + rowHeight * 7.1);
@@ -411,10 +482,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 		const data9 = {
 			//headers: [],
-			rows: [
-
-				[`Other / Promotion: ${order.promotion}`],
-			],
+			rows: [[`Other / Promotion: ${order.promotion}`]],
 		};
 
 		doc.fontSize(cellFontSize);
@@ -427,12 +495,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			rowHeight
 		);
 
-
-
-
 		//doc.moveDown();
 		//doc.fontSize(cellFontSize).text(text1, { align: "center" });
-
 
 		doc.fontSize(cellFontSize).text("", startX, startY + rowHeight * 12);
 		doc.fontSize(fontTitle).text("INSTALLATION INSTRUCTIONS", {
@@ -479,7 +543,6 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			rowHeight
 		);
 
-
 		//doc.lineJoin("miter").rect(5, 10, 5, 5).stroke();
 
 		doc.fontSize(fontTitle).text("", startX, rowHeight * 17);
@@ -488,18 +551,22 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			align: "center",
 		});
 
-
 		const data21 = {
 			//headers: [],
 			rows: [
 				[
-					`CREDIT CARD (SIGNED ATTACHED FORM): ${order.creditCard ? "Yes" : "No"}`,
-					`CHECK (PAYABLE TO AQUAFEEL SOLUTIONS): ${order.check ? "Yes" : "No"}`,
+					`CREDIT CARD (SIGNED ATTACHED FORM): ${order.creditCard ? "Yes" : "No"
+					}`,
+					`CHECK (PAYABLE TO AQUAFEEL SOLUTIONS): ${order.check ? "Yes" : "No"
+					}`,
 				],
 			],
 		};
 
-		doc.moveDown(); doc.moveDown(); doc.moveDown(); doc.moveDown();
+		doc.moveDown();
+		doc.moveDown();
+		doc.moveDown();
+		doc.moveDown();
 		doc.fontSize(noteFontSize).text("\n" + UPON_SIGNING, {
 			width: bodyWidth,
 			align: "justified",
@@ -543,7 +610,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			startX,
 			startY + rowHeight * 20,
 			[100, 85, 80, 100, 100, 120],
-			rowHeight, "center"
+			rowHeight,
+			"center"
 		);
 
 		const data5 = {
@@ -571,7 +639,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			startX,
 			startY + rowHeight * 23,
 			[105, 120, 120, 120, 120],
-			rowHeight, "center"
+			rowHeight,
+			"center"
 		);
 
 		doc.fontSize(cellFontSize).text("", startX, rowHeight * 27);
@@ -585,21 +654,21 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			rows: [
 				[
 					"APROVAL / BUYER 1",
-					`${order.approval1.purchaser}`,
+					{ content: order.buyer1.signature },
 					"DATE",
-					`${localDate(order.approval1.date)}`,
+					`${localDate(order.buyer1.date)}`,
 				],
 				[
 					"APROVAL / BUYER 2",
-					`${order.approval2.purchaser}`,
+					{ content: order.buyer2.signature },
 					"DATE",
-					`${localDate(order.approval2.date)}`,
+					`${localDate(order.buyer2.date)}`,
 				],
 				[
 					"REP. DE AQUAFEEL SOLUTIONS",
-					`${order.employee}`,
+					{ content: order.employee.signature },
 					"APROB. OF CENTRAL",
-					`${order.approvedBy}`,
+					{ content: order.approvedBy.signature },
 				],
 			],
 		};
@@ -608,12 +677,12 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			doc,
 			data6,
 			startX,
-			startY + rowHeight * 28,
-			[bodyWidth / 4, bodyWidth / 4, bodyWidth / 4, bodyWidth / 4],
-			rowHeight
+			startY + rowHeight * 28 - 15,
+			[106, 186, 166, 126],
+			rowHeight * 1.5
 		);
 
-		doc.fontSize(cellFontSize).text("\n", startX, startY + rowHeight * 31);
+		doc.fontSize(cellFontSize).text("\n", startX, startY + rowHeight * 31.5);
 		doc.fontSize(noteFontSize).text(THIS_CONTRACT_IS + "\n", {
 			width: bodyWidth,
 			align: "justify",
@@ -623,7 +692,6 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			align: "center",
 		});
 
-
 		doc.addPage({
 			margins: {
 				top: 72,
@@ -632,6 +700,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				right: 72,
 			},
 		});
+
+		
 
 		doc.fontSize(8).text(termsAndConditions);
 
@@ -643,15 +713,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 };
 
 function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
-
-
 	let x = startX;
 	let y = startY;
 
 	// Determinar el número de columnas basado en la primera fila de datos
 	const numColumns = data.headers ? data.headers.length : data.rows[0].length;
-
-
 
 	// Dibujar encabezados y líneas horizontales (si hay encabezados)
 	if (data.headers && data.headers.length > 0) {
@@ -663,7 +729,6 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 			x += columnWidths[i];
 		});
 
-
 		// Avanzar la posición vertical para las filas
 		y += rowHeight;
 	}
@@ -672,13 +737,32 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 	data.rows.forEach((row) => {
 		x = startX;
 		row.forEach((cell, i) => {
-			doc.text(cell, x + 5, y + 5, {
-				width: columnWidths[i] - 10,
-				align: "left",
-			});
+			if (typeof cell === 'string' || typeof cell === 'number') {
+
+				doc.text(cell, x + 5, y + 5, {
+					width: columnWidths[i] - 10,
+					align: 'left',
+				});
+			} else {
+
+				const imgBase64 = cell.content.toString('base64');
+				const imgDataUrl = `data:image/png;base64,${imgBase64}`;
+				doc.image(imgDataUrl, x + 5, y + 5 - 20, {
+					fit: [columnWidths[i] - 10, rowHeight - 10 + 5],
+					align: 'center',
+					valign: 'top',
+				});
+			}
+
+
+			/*
+		doc.text(cell, x + 5, y + 5, {
+		  width: columnWidths[i] - 10,
+		  align: "left",
+		});
+		*/
 			x += columnWidths[i];
 		});
-
 
 		y += rowHeight;
 	});
@@ -686,14 +770,22 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 	// Dibujar líneas verticales
 	x = startX;
 	for (let i = 0; i <= numColumns; i++) {
-
 		if (i < numColumns) {
 			x += columnWidths[i];
 		}
 	}
 }
 
-function drawTable(doc, data, startX, startY, columnWidths, rowHeight, align = "left", lineWidth = 0.1) {
+function drawTable(
+	doc,
+	data,
+	startX,
+	startY,
+	columnWidths,
+	rowHeight,
+	align = "left",
+	lineWidth = 0.1
+) {
 	doc.lineWidth(lineWidth);
 
 	let x = startX;
