@@ -81,7 +81,7 @@ module.exports.list = async (req, res, next) => {
 			};
 		}
 
-		console.log({ cond });
+		
 		const count = await Order.count(cond);
 		let orders = await Order.find(cond)
 			.limit(parseInt(limit))
@@ -123,7 +123,7 @@ module.exports.list = async (req, res, next) => {
 			return order;
 		  });
 	*/
-		console.log(orders)
+		
 
 		res.status(200).json({
 			//data: orders.map((o)=>{return {id:o.id, buyer1:o.buyer1, system1:o.system1, price: o.price}; }),
@@ -131,7 +131,7 @@ module.exports.list = async (req, res, next) => {
 			count,
 		});
 	} catch (error) {
-		console.log(error.message);
+		
 		res.status(400).send({ message: error.message });
 	}
 };
@@ -203,14 +203,14 @@ module.exports.add = async (req, res) => {
 		newOrder.employee.signature = newOrder.employee.signature.toString("base64");
 		newOrder.approvedBy.signature = newOrder.approvedBy.signature.toString("base64");
 
-
-		console.log({ data: newOrder, message: "record added correctly!" })
+		let order = await Order.findOne({_id: newOrder._id}).lean();
+		
 
 		res
 			.status(201)
-			.send({ data: newOrder, message: "record added correctly!" });
+			.send({ data: order, message: "record added correctly!" });
 	} catch (error) {
-		console.log(error.message);
+		
 		res.status(400).send({ message: error.message });
 	}
 };
@@ -219,7 +219,7 @@ module.exports.edit = async (req, res, next) => {
 	try {
 		const orderData = req.body;
 
-		console.log(orderData);
+		
 		const id = orderData._id;
 		//orderData._id = undefined
 
@@ -253,10 +253,10 @@ module.exports.edit = async (req, res, next) => {
 			{ new: true }
 		);
 
-		//console.log({ data: order, message: "Order added correctly!" })
+		
 		res.status(201).json({ data: order, message: "Order added correctly!" });
 	} catch (e) {
-		console.log(e);
+		
 		res.status(400).json(e);
 	}
 };
@@ -310,7 +310,7 @@ module.exports.pdf1 = async (req, res, next) => {
 		// Finalizar el documento
 		doc.end();
 	} catch (e) {
-		console.log(e);
+		
 		res.status(400).json(e);
 	}
 };
@@ -649,26 +649,31 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			align: "left",
 		});
 
+		let sign1 = ( order.buyer1.signature.length > 0) ? { content: order.buyer1.signature } : "( no signature )";
+		let sign2 = ( order.buyer2.signature.length > 0) ? { content: order.buyer2.signature } : "( no signature )";
+		let sign3 = ( order.employee.signature.length > 0) ? { content: order.employee.signature } : "( no signature )";
+		let sign4 = ( order.approvedBy.signature.length > 0) ? { content: order.approvedBy.signature } : "( no signature )";
+
 		const data6 = {
 			//headers: ['Amount to Finance', 'Payment Terms', 'A.P.R', "Finance Charge", "Total of Payments"],
 			rows: [
 				[
 					"APROVAL / BUYER 1",
-					{ content: order.buyer1.signature },
+					sign1,
 					"DATE",
 					`${localDate(order.buyer1.date)}`,
 				],
 				[
 					"APROVAL / BUYER 2",
-					{ content: order.buyer2.signature },
+					sign2,
 					"DATE",
 					`${localDate(order.buyer2.date)}`,
 				],
 				[
 					"REP. DE AQUAFEEL SOLUTIONS",
-					{ content: order.employee.signature },
+					sign3,
 					"APROB. OF CENTRAL",
-					{ content: order.approvedBy.signature },
+					sign4,
 				],
 			],
 		};
@@ -745,7 +750,9 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 				});
 			} else {
 
+				
 				const imgBase64 = cell.content.toString('base64');
+				
 				const imgDataUrl = `data:image/png;base64,${imgBase64}`;
 				doc.image(imgDataUrl, x + 5, y + 5 - 20, {
 					fit: [columnWidths[i] - 10, rowHeight - 10 + 5],
