@@ -251,7 +251,7 @@ module.exports.edit = async (req, res, next) => {
 				$set: orderData,
 			},
 			{ new: true }
-		);
+		).lean();
 
 		
 		res.status(201).json({ data: order, message: "Order added correctly!" });
