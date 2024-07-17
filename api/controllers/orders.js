@@ -8,7 +8,7 @@ module.exports.list = async (req, res, next) => {
 			fromDate,
 			toDate,
 			status_id,
-			limit = 10,
+			limit = 1000,
 			offset = 0,
 			search_key,
 			search_value,
@@ -17,70 +17,10 @@ module.exports.list = async (req, res, next) => {
 		} = req.query;
 
 		let cond = {
-			//created_by: req.query.user_id
+			createdBy: req.query.user_id
 		};
 
-		if (req.query.favorite === "true") {
-			cond.favorite = true;
-		}
-		if (req.query.today === "true") {
-			const now = new Date();
-			const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-			cond.created_on = {
-				$gte: today,
-			};
-		}
-		//search
-		if (search_key === "all") {
-			cond = {
-				...cond,
-				$or: [
-					{
-						first_name: new RegExp(`${search_value}`, "i"),
-					},
-					{
-						last_name: new RegExp(`${search_value}`, "i"),
-					},
-					{
-						street_address: new RegExp(`${search_value}`, "i"),
-					},
-					{
-						state: new RegExp(`${search_value}`, "i"),
-					},
-					{
-						city: new RegExp(`${search_value}`, "i"),
-					},
-					{
-						zip: new RegExp(`${search_value}`, "i"),
-					},
-				],
-			};
-		} else if (search_key && search_value) {
-			cond = {
-				...cond,
-				[search_key]: new RegExp(`${search_value}`, "i"),
-			};
-		}
-
-		//filter
-		if (status_id) {
-			cond = {
-				...cond,
-				status_id: { $in: status_id.split(",") },
-			};
-		}
-		if (field && quickDate !== "all_time") {
-			const { _fromDate, _toDate } = generateDateRange(
-				quickDate,
-				fromDate,
-				toDate
-			);
-			cond[field] = {
-				$gte: _fromDate,
-				$lte: _toDate,
-			};
-		}
-
+		
 		
 		const count = await Order.count(cond);
 		let orders = await Order.find(cond)
@@ -137,14 +77,25 @@ module.exports.list = async (req, res, next) => {
 };
 
 module.exports.details = async (req, res, next) => {
+
+	
 	try {
-		let order = await Order.findOne({ _id: req.query.id });
+
+		let condition = {};
+		if (req.query.leadId ) {
+			condition = { lead: req.query.leadId};
+		} else  {
+			condition = { _id: req.query.id };
+		}
+		
+		let order = await Order.findOne(condition).lean();
 
 		res.status(200).json({
 			data: order,
 			message: "record recovery correctly!",
 		});
 	} catch (e) {
+		
 		res.status(400).json(e);
 	}
 };
@@ -174,7 +125,7 @@ module.exports.add = async (req, res) => {
 
 		orderData.createdOn = Date.now();
 		orderData.updatedOn = Date.now();
-		orderData.createdBy = req.body.user_id || "xxxx";
+		//orderData.createdBy = req.body.user_id || "xxxx";
 
 		/*if (orderData.system1){
 							orderData.system1._id = undefined
@@ -242,8 +193,9 @@ module.exports.edit = async (req, res, next) => {
 		);
 
 		//orderData.createdOn = Date.now(),
-		(orderData.updatedOn = Date.now()),
-			(orderData.createdBy = req.body.user_id || "xxxx");
+		orderData.updatedOn = Date.now();
+		
+		
 
 		let order = await Order.findByIdAndUpdate(
 			id,
@@ -254,7 +206,7 @@ module.exports.edit = async (req, res, next) => {
 		).lean();
 
 		
-		res.status(201).json({ data: order, message: "Order added correctly!" });
+		res.status(201).json({ data: order, message: "Order updated correctly!" });
 	} catch (e) {
 		
 		res.status(400).json(e);
@@ -266,11 +218,13 @@ module.exports.delete = async (req, res, next) => {
 	let deletedOrder = await Order.deleteOne({ _id: id });
 
 	if (deletedOrder.deletedCount > 0) {
+		
 		res.status(200).json({
 			data: deletedOrder,
 			message: "Order deleted successfully",
 		});
 	} else {
+		
 		res.status(404).json({
 			message: "no Order found",
 			data: {},
@@ -347,10 +301,10 @@ Aquafeel Solutions
 I hereby cancel this transaction:
 Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Buyer’sSignature:________________________`;
 
-	const fontSize = 10;
+	const fontSize = 16;
 	const fontTitle = 9;
 	const bodyWidth = 585;
-	const cellFontSize = 8;
+	const cellFontSize = 9;
 	const noteFontSize = 7;
 	const startX = 15;
 	const startY = 25;
@@ -359,8 +313,9 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 	try {
 		let id = req.query.id;
-		let order = await Order.findOne({ _id: id });
+		let order = await Order.findOne({ _id: id }).populate("createdBy");
 
+		
 		if (!order) {
 			return res.status(404).json({ message: "Order not found" });
 		}
@@ -503,14 +458,17 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			width: 585,
 			align: "center",
 		});
+		
+
+		
 		const data3 = {
 			//headers: ['A', 'B', 'C', "D"],
 			rows: [
 				[
 					`DAY OF INTALLATION: ${order.installation.day}`,
-					`DATE: ${localDate(order.installation.date)}`,
+					`DATE: ${order.installation.date.toLocaleDateString('en-US')}`,
 					`CONEXION ICE MAKER: ${order.installation.iceMaker ? "Yes" : "No"}`,
-					`TIME: ${localTime(order.installation.date)}`,
+					`TIME: ${order.installation.date.toLocaleTimeString('en-US')}`,
 				],
 			],
 		};
@@ -528,7 +486,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			//headers: ['A', 'B', 'C', "D"],
 			rows: [
 				[
-					`Número de personas que viven en la casa: ${order.people}`,
+					`People involved: ${order.people}`,
 					`Floor Type: ${order.floorType}`,
 				],
 			],
@@ -625,7 +583,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			rows: [
 				[
 					order.price.toFinance,
-					`${order.price.terms.amount}, ${order.price.terms.amount}`,
+					`${order.price.terms.amount} ${order.price.terms.unit}`,
 					order.price.APR,
 					order.price.finaceCharge,
 					order.price.totalPayments,
@@ -670,10 +628,10 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					`${localDate(order.buyer2.date)}`,
 				],
 				[
-					"REP. DE AQUAFEEL SOLUTIONS",
+					`${order.createdBy?.firstName || "" + " " + order.createdBy?.lastName || "" }\nREP. DE AQUAFEEL SOLUTIONS` ,
 					sign3,
-					"APROB. OF CENTRAL",
-					sign4,
+					"",//"APROB. OF CENTRAL",
+					"",//sign4,
 				],
 			],
 		};
@@ -712,7 +670,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 		doc.end();
 	} catch (e) {
-		console.log(e);
+		
 		res.status(400).json(e);
 	}
 };
@@ -743,6 +701,10 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 		x = startX;
 		row.forEach((cell, i) => {
 			if (typeof cell === 'string' || typeof cell === 'number') {
+
+				if(typeof cell === 'string'){
+					cell = cell.toUpperCase();
+				} 
 
 				doc.text(cell, x + 5, y + 5, {
 					width: columnWidths[i] - 10,
@@ -830,6 +792,9 @@ function drawTable(
 	data.rows.forEach((row) => {
 		x = startX;
 		row.forEach((cell, i) => {
+			if(typeof cell === 'string'){
+				cell = cell.toUpperCase();
+			} 
 			doc.text(cell, x + 5, y + 5, {
 				width: columnWidths[i] - 10,
 				align: align,
@@ -944,22 +909,18 @@ function drawTable1(doc, data, startX, startY, columnWidths, rowHeight) {
 }
 
 function localDate(req, date) {
-	const locale = "en-US"; // Detectar configuración regional del encabezado
 
-	return new Intl.DateTimeFormat(locale, {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	}).format(date);
+	if(!date){
+		return "";
+	}
+
+
+	return date.toLocaleDateString('en-US')
+
+	
 }
 
 function localTime(req, date) {
-	const locale = "en-US"; // Detectar configuración regional del encabezado
-
-	return new Intl.DateTimeFormat(locale, {
-		hour: "numeric",
-		minute: "numeric",
-		second: "numeric",
-		hour12: false, // Cambiar a true si prefieres formato de 12 horas
-	}).format(date);
+	return date.toLocaleTimeString('en-US')
+	
 }

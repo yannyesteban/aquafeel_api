@@ -103,7 +103,7 @@ module.exports.listAll = async (req, res, next) => {
 			quickDate
 		} = req.query
 
-		console.log("..... list All")
+		
 		let cond = {};
 		if (req.user.role === "MANAGER") {
 			const userInfo = await User.findById(req.user.id);

@@ -76,7 +76,7 @@ const orderSchema = new Schema(
     promotion: { type: String, required: false },
     installation: { type: installSchema, required: false },
     people: { type: Number, required: false },
-    floorType: { type: String, required: false },
+    approvedBy : { type: approvalSchema, required: false },
     creditCard: { type: Boolean, required: false },
     check: { type: Boolean, required: false },
     price: { type: priceSchema, required: false },
@@ -86,6 +86,7 @@ const orderSchema = new Schema(
     approvedBy : { type: approvalSchema, required: false },
     //signature1: { type: Buffer, required: false }, // Added signature field
     //signature2: { type: Buffer, required: false }, // Added signature field
+    lead: { type: String, required: false },
     createdBy:{
       type: String,
       ref: "Users",

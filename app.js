@@ -61,6 +61,8 @@ const resourceRoutes = require("./api/routes/resource");
 const statsRoutes = require("./api/routes/stats");
 const notificationRoutes = require("./api/routes/notifications");
 const orderRoutes = require("./api/routes/orders");
+const brandRoutes = require("./api/routes/brands");
+const modelRoutes = require("./api/routes/models");
 
 app.use("/roles", rolesRoutes);
 app.use("/auth", authRoutes);
@@ -73,6 +75,8 @@ app.use("/resources", resourceRoutes);
 app.use("/stats", statsRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/orders", orderRoutes);
+app.use("/brands", brandRoutes);
+app.use("/models", modelRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
