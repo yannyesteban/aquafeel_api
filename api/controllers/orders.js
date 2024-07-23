@@ -622,13 +622,13 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					`${localDate(order.buyer1.date)}`,
 				],
 				[
-					"APROVAL / BUYER 2",
+					"APROVAL / BUYER 2.",
 					sign2,
 					"DATE",
 					`${localDate(order.buyer2.date)}`,
 				],
 				[
-					`${order.createdBy?.firstName || "" + " " + order.createdBy?.lastName || "" }\nREP. DE AQUAFEEL SOLUTIONS` ,
+					`${(order.createdBy?.firstName || "") + (" " + order.createdBy?.lastName || "") }\nREP. DE AQUAFEEL SOLUTIONS` ,
 					sign3,
 					"",//"APROB. OF CENTRAL",
 					"",//sign4,
