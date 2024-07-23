@@ -619,13 +619,13 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					"APROVAL / BUYER 1",
 					sign1,
 					"DATE",
-					`${localDate(order.buyer1.date)}`,
+					`${order.buyer1.date.toLocaleDateString('en-US')}`,
 				],
 				[
-					"APROVAL / BUYER 2.",
+					"APROVAL / BUYER 2",
 					sign2,
 					"DATE",
-					`${localDate(order.buyer2.date)}`,
+					`${order.buyer2.date.toLocaleDateString('en-US')}`,
 				],
 				[
 					`${(order.createdBy?.firstName || "") + (" " + order.createdBy?.lastName || "") }\nREP. DE AQUAFEEL SOLUTIONS` ,

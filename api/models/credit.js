@@ -11,10 +11,15 @@ const approvalSchema = new Schema(
   }, { _id: false }
 );
 
-const buyerSchema = new Schema(
+const applicantSchema = new Schema(
   {
 
-    name: { type: String, required: false },
+    firstName: { type: String, required: false },
+    lastName: { type: String, required: false },
+    dateOfBirth: { type: Date, required: false },
+
+    ss: { type: String, required: false },
+    id: { type: String, required: false },
     phone: { type: String, required: false },
     cel: { type: String, required: false },
     signature: { type: Buffer, required: false },
