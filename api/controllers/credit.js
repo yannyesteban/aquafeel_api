@@ -1,6 +1,8 @@
 const Credit = require("../models/credit");
 const PDFDocument = require("pdfkit");
 
+let userTimeZone = "America/Caracas";
+
 module.exports.list = async (req, res, next) => {
 
 	console.log("credit list")
@@ -330,6 +332,8 @@ module.exports.pdf1 = async (req, res, next) => {
 module.exports.pdf = async (req, res, next) => {
 
 
+
+
 	const text = {
 
 		title: "CREDIT APLICATION / APLICACION DE CREDITO",
@@ -393,14 +397,19 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 	const rowHeight = 22;
 
+	
 	try {
+		
 		let id = req.query.id;
+		userTimeZone = req.query.userTimeZone || userTimeZone;
 		let credit = await Credit.findOne({ _id: id }).populate("createdBy");
 
 		
 		if (!credit) {
 			return res.status(404).json({ message: "Order not found" });
 		}
+
+
 
 		const doc = new PDFDocument({ size: "LETTER", autoFirstPage: false });
 
@@ -498,15 +507,15 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					],
 					[
 						`SS#\n  ${credit.applicant.ss}`,
-						`Date of Birth\n  ${credit.applicant.dateOfBirth.toLocaleDateString('en-US')}`,
+						`Date of Birth\n  ${localDate(credit.applicant.dateOfBirth)}`,
 						`SS#\n  ${credit.applicant2.ss}`,
-						`Date of Birth\n  ${credit.applicant2.dateOfBirth.toLocaleDateString('en-US')}`,
+						`Date of Birth\n  ${localDate(credit.applicant2.dateOfBirth)}`,
 					],
 					[
 						`DL#\n  ${credit.applicant.id}`,
-						`Exp\n  ${credit.applicant.idExp.toLocaleDateString('en-US')}`,
+						`Exp\n  ${localDate(credit.applicant.idExp)}`,
 						`DL#\n  ${credit.applicant2.id}`,
-						`Exp\n  ${credit.applicant2.idExp.toLocaleDateString('en-US')}`,
+						`Exp\n  ${localDate(credit.applicant2.idExp)}`,
 					],
 					[
 						`Cell Phone\n  ${credit.applicant.cel}`,
@@ -851,7 +860,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				rows: [
 					
 					[
-						sign01, "\n" + credit.applicant.date.toLocaleDateString('en-US'), sign02, "\n" + credit.applicant2.date.toLocaleDateString('en-US')
+						sign01, "\n" + localDate(credit.applicant.date), sign02, "\n" + localDate(credit.applicant2.date)
 						
 						
 					],
@@ -1436,19 +1445,43 @@ function drawTable1(doc, data, startX, startY, columnWidths, rowHeight) {
 	});
 }
 
-function localDate(req, date) {
+function localDate( date) {
+	if(!date){
+		return "";
+	}
+
+	// Convertir la fecha de nacimiento a la zona horaria del usuario
+	const dateUTC = new Date(date);
+	const dateInUserTZ = new Date(dateUTC.toLocaleString('en-US', { timeZone: userTimeZone }));
+
+	// Formatear la fecha
+	const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+	const formattedDate = dateInUserTZ.toLocaleDateString('en-US'/*, options*/);
+
+	//console.log(dateInUserTZ, formattedDate)
+
+	return formattedDate;
+	
+}
+
+function localTime( date) {
 
 	if(!date){
 		return "";
 	}
 
+	// Convertir la fecha de nacimiento a la zona horaria del usuario
+	const dateUTC = new Date(date);
+	const dateInUserTZ = new Date(dateUTC.toLocaleString('en-US', { timeZone: userTimeZone }));
 
-	return date.toLocaleDateString('en-US')
+	// Formatear la fecha
+	const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+	const formattedDate = dateInUserTZ.toLocaleTimeString('en-US'/*, options*/);
 
 	
-}
 
-function localTime(req, date) {
-	return date.toLocaleTimeString('en-US')
+	return formattedDate;
+
+	
 	
 }

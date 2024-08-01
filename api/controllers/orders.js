@@ -1,6 +1,8 @@
 const Order = require("../models/order");
 const PDFDocument = require("pdfkit");
 
+let userTimeZone = "America/Caracas";
+
 module.exports.list = async (req, res, next) => {
 	try {
 		const {
@@ -313,6 +315,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 	try {
 		let id = req.query.id;
+		userTimeZone = req.query.userTimeZone || userTimeZone;
 		let order = await Order.findOne({ _id: id }).populate("createdBy");
 
 		
@@ -466,9 +469,9 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			rows: [
 				[
 					`DAY OF INTALLATION: ${order.installation.day}`,
-					`DATE: ${order.installation.date.toLocaleDateString('en-US')}`,
+					`DATE: ${localDate(order.installation.date)}`,
 					`CONEXION ICE MAKER: ${order.installation.iceMaker ? "Yes" : "No"}`,
-					`TIME: ${order.installation.date.toLocaleTimeString('en-US')}`,
+					`TIME: ${localTime(order.installation.date)}`,
 				],
 			],
 		};
@@ -619,13 +622,13 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					"APROVAL / BUYER 1",
 					sign1,
 					"DATE",
-					`${order.buyer1.date.toLocaleDateString('en-US')}`,
+					`${localDate(order.buyer1.date)}`,
 				],
 				[
 					"APROVAL / BUYER 2",
 					sign2,
 					"DATE",
-					`${order.buyer2.date.toLocaleDateString('en-US')}`,
+					`${localDate(order.buyer2.date)}`,
 				],
 				[
 					`${(order.createdBy?.firstName || "") + (" " + order.createdBy?.lastName || "") }\nREP. DE AQUAFEEL SOLUTIONS` ,
@@ -908,19 +911,43 @@ function drawTable1(doc, data, startX, startY, columnWidths, rowHeight) {
 	});
 }
 
-function localDate(req, date) {
+function localDate( date) {
+	if(!date){
+		return "";
+	}
+
+	// Convertir la fecha de nacimiento a la zona horaria del usuario
+	const dateUTC = new Date(date);
+	const dateInUserTZ = new Date(dateUTC.toLocaleString('en-US', { timeZone: userTimeZone }));
+
+	// Formatear la fecha
+	const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+	const formattedDate = dateInUserTZ.toLocaleDateString('en-US'/*, options*/);
+
+	//console.log(dateInUserTZ, formattedDate)
+
+	return formattedDate;
+	
+}
+
+function localTime( date) {
 
 	if(!date){
 		return "";
 	}
 
+	// Convertir la fecha de nacimiento a la zona horaria del usuario
+	const dateUTC = new Date(date);
+	const dateInUserTZ = new Date(dateUTC.toLocaleString('en-US', { timeZone: userTimeZone }));
 
-	return date.toLocaleDateString('en-US')
+	// Formatear la fecha
+	const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
+	const formattedDate = dateInUserTZ.toLocaleTimeString('en-US'/*, options*/);
 
 	
-}
 
-function localTime(req, date) {
-	return date.toLocaleTimeString('en-US')
+	return formattedDate;
+
+	
 	
 }
