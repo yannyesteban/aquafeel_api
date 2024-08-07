@@ -7,6 +7,17 @@ module.exports.list = async (req, res, next) => {
 
 	console.log("credit list")
 	try {
+
+		
+		await Credit.deleteMany({})
+			.then(() => {
+				console.log('Todos los usuarios han sido eliminados');
+			})
+			.catch(err => {
+				console.error(err);
+			});
+		
+
 		const {
 			field,
 			fromDate,
@@ -625,11 +636,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				rows: [
 					
 					[
-						`Status\n  ${credit.mortage.status}`,
-						`Mortage Company\n  ${credit.mortage.mortageCompany}`,
+						`Status\n  ${credit.mortgage.status}`,
+						`mortgage Company\n  ${credit.mortgage.mortgageCompany}`,
 
-						`Monthly Payment\n  ${credit.mortage.monthlyPayment}`,
-						`How Long Here\n  ${credit.mortage.howlong}`,
+						`Monthly Payment\n  ${credit.mortgage.monthlyPayment}`,
+						`How Long Here\n  ${credit.mortgage.howlong}`,
 						
 					],
 				],
@@ -860,7 +871,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				rows: [
 					
 					[
-						sign01, "\n" + localDate(credit.applicant.date), sign02, "\n" + localDate(credit.applicant2.date)
+						sign01, "\n\n  " + localDate(credit.applicant.date), sign02, "\n\n  " + localDate(credit.applicant2.date)
 						
 						
 					],
@@ -887,7 +898,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				rows: [
 					
 					[
-						`\n${(credit.createdBy?.firstName || "") + (" " + credit.createdBy?.lastName || "") }` ,
+						`\n\n${(credit.createdBy?.firstName || "") + (" " + credit.createdBy?.lastName || "") }` ,
 						sign03,
 						
 					],
@@ -1253,8 +1264,8 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 				const imgBase64 = cell.content.toString('base64');
 				
 				const imgDataUrl = `data:image/png;base64,${imgBase64}`;
-				doc.image(imgDataUrl, x + 15, y + 15 - 20, {
-					fit: [columnWidths[i] - 1, rowHeight - 1 + 5],
+				doc.image(imgDataUrl, x + 15, y + 15 - 20 + 7, {
+					fit: [columnWidths[i] - 1, rowHeight - 1 + 10],
 					align: 'left',
 					valign: 'bottom',
 				});

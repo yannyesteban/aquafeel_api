@@ -10,10 +10,10 @@ const approvalSchema = new Schema(
   { _id: false }
 );
 
-const mortageSchema = new Schema(
+const mortgageSchema = new Schema(
   {
     status: { type: String, required: false },
-    mortageCompany: { type: String, required: false },
+    mortgageCompany: { type: String, required: false },
     monthlyPayment: { type: Number, required: false },
     howlong: { type: Number, required: false },
    },
@@ -44,12 +44,12 @@ const incomeSchema = new Schema(
   {
     employer: { type: String, required: false },
     years: { type: Number, required: false },
-    salary: { type: Number, required: false },
+    salary: { type: String, required: false },
     position: { type: String, required: false },
     phone: { type: String, required: false },
 
     preEmployer: { type: String, required: false },
-    otherIncome: { type: Number, required: false },
+    otherIncome: { type: String, required: false },
   },
   { _id: false }
 );
@@ -89,7 +89,7 @@ const systemSchema = new Schema(
 const creditSchema = new Schema({
   applicant: { type: applicantSchema, required: false },
   applicant2: { type: applicantSchema, required: false },
-  mortage: { type: mortageSchema, required: false },
+  mortgage: { type: mortgageSchema, required: false },
   reference: { type: referenceSchema, required: false },
   reference2: { type: referenceSchema, required: false },
   bank: { type: bankSchema, required: false },

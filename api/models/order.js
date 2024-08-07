@@ -36,6 +36,12 @@ const installSchema = new Schema(
     date: { type: Date, required: false },
     waterSouce : { type: String, required: false },
     iceMaker: { type: Boolean, required: false },
+
+    s0: { type: Boolean, required: false },
+    s1: { type: Boolean, required: false },
+    s2: { type: Boolean, required: false },
+    s3: { type: Boolean, required: false },
+
     time: { type: Number, required: false },
   }, { _id: false }
 );

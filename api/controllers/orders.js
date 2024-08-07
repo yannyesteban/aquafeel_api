@@ -273,8 +273,8 @@ module.exports.pdf1 = async (req, res, next) => {
 
 module.exports.pdf = async (req, res, next) => {
 	const AquafeelSolutions =
-		"Aquafeel Solutions propone proveer todos los produtos, materiales y mano de obra para instalar lo especificado a continuacion y el comprador(es) ordena y compra los produtos, materiales y mano de obra e instalacion de lo especificado a continuacion:";
-
+		//"Aquafeel Solutions propone proveer todos los produtos, materiales y mano de obra para instalar lo especificado a continuacion y el comprador(es) ordena y compra los produtos, materiales y mano de obra e instalacion de lo especificado a continuacion:";
+	"Aquafeel Solutions proposes to provide all products, materials, and labor to install the specified items below, and the buyer(s) orders and purchases the products, materials, labor, and installation of the specified items below:"
 	const THIS_CONTRACT_IS =
 		"THIS CONTRACT IS VALID ONLY UPON SIGNED APROVAL BY EMPLOYED MANAGEMENT PRESONNEL OF AQUAFEEL SOLUTIONS. SEE TERMS AND CONDITIONS ON REVERSE SIDE. A RESTOCKING FEE OF 20%. WILL BE CHARGE FOR TRANSACTIONS THAT ARE CANCELLED AFTER THREE DAY WATING PERIOD.";
 	const TEXT_230_Capcom =
@@ -411,6 +411,57 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			align: "left",
 		});
 
+
+		let list = ""
+		let nList = 0;
+
+		if(order.installation.s0) {
+			list += `                              - WHOLE HOUSE AQUAFEEL SYSTEM\n`;
+			nList++;
+		}
+		if(order.installation.s1) {
+			list += `                              - REVERSE OSMOSIS\n`;
+			nList++;
+		}
+		if(order.installation.s2) {
+			list += `                              - REVERSE OSMOSIS + ALKALINE\n`;
+			nList++;
+		}
+		if(order.installation.s3) {
+			list += `                              - NATURAL SOAP PACKAGE`;
+			nList++;
+		}
+
+		const data2 = {
+			//headers: [],
+			rows: [
+				[
+					`Water System Treatment: \n${list}`
+				]
+				//[`Other \n  ${order.promotion}`, ``, ``],
+			],
+		};
+		
+
+
+		if(nList>=4) {
+			doc.fontSize(7);
+		} else {
+			doc.fontSize(cellFontSize);
+		}
+
+		
+		drawTable(
+			doc,
+			data2,
+			startX,
+			startY + rowHeight * 8,
+			[bodyWidth],
+			rowHeight * 2
+		);
+
+
+		/*
 		const data2 = {
 			//headers: [],
 			rows: [
@@ -427,6 +478,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				//[`Other \n  ${order.promotion}`, ``, ``],
 			],
 		};
+		
 
 		doc.fontSize(cellFontSize);
 		drawTable(
@@ -437,6 +489,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[195, 195, 195],
 			rowHeight
 		);
+		*/
 
 		const data9 = {
 			//headers: [],
@@ -579,7 +632,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			headers: [
 				"Amount to Finance",
 				"Payment Terms",
-				"A.P.R",
+				"A.P.R ( % )",
 				"Finance Charge",
 				"Total of Payments",
 			],
@@ -587,7 +640,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				[
 					order.price.toFinance,
 					`${order.price.terms.amount} ${order.price.terms.unit}`,
-					order.price.APR,
+					order.price.APR + " %",
 					order.price.finaceCharge,
 					order.price.totalPayments,
 				],
