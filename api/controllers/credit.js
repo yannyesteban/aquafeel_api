@@ -8,7 +8,7 @@ module.exports.list = async (req, res, next) => {
 	console.log("credit list")
 	try {
 
-		
+		/*
 		await Credit.deleteMany({})
 			.then(() => {
 				console.log('Todos los usuarios han sido eliminados');
@@ -16,7 +16,7 @@ module.exports.list = async (req, res, next) => {
 			.catch(err => {
 				console.error(err);
 			});
-		
+		*/
 
 		const {
 			field,
