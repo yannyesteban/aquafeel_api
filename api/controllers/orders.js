@@ -772,7 +772,7 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 				const imgBase64 = cell.content.toString('base64');
 				
 				const imgDataUrl = `data:image/png;base64,${imgBase64}`;
-				doc.image(imgDataUrl, x + 5, y + 5 - 20, {
+				doc.image(imgDataUrl, x + 5, y + 5 - 20 + 10, {
 					fit: [columnWidths[i] - 10, rowHeight - 10 + 5],
 					align: 'center',
 					valign: 'top',

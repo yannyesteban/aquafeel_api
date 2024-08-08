@@ -15,7 +15,7 @@ const mortgageSchema = new Schema(
     status: { type: String, required: false },
     mortgageCompany: { type: String, required: false },
     monthlyPayment: { type: Number, required: false },
-    howlong: { type: Number, required: false },
+    howlong: { type: String, required: false },
    },
   { _id: false }
 );

@@ -8,7 +8,7 @@ module.exports.list = async (req, res, next) => {
 	console.log("credit list")
 	try {
 
-		/*
+		
 		await Credit.deleteMany({})
 			.then(() => {
 				console.log('Todos los usuarios han sido eliminados');
@@ -16,7 +16,7 @@ module.exports.list = async (req, res, next) => {
 			.catch(err => {
 				console.error(err);
 			});
-		*/
+		
 
 		const {
 			field,
@@ -121,7 +121,7 @@ module.exports.details = async (req, res, next) => {
 
 module.exports.add = async (req, res) => {
 
-	console.log("hello add", req.body)
+	
 
 	try {
 		const orderData = req.body;
@@ -149,7 +149,6 @@ module.exports.add = async (req, res) => {
 		*/
 
 
-		console.log(orderData.applicant.signature)
 		
 
 		orderData.applicant.signature = Buffer.from(
@@ -514,7 +513,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 						`Last name\n  ${credit.applicant.lastName}`,
 						`First Name\n  ${credit.applicant.firstName}`,
 						`Last name\n  ${credit.applicant2.lastName}`,
-						`First Name\n  ${credit.applicant2.lastName}`
+						`First Name\n  ${credit.applicant2.firstName}`
 					],
 					[
 						`SS#\n  ${credit.applicant.ss}`,
@@ -598,14 +597,14 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 						`Relationship\n  ${credit.applicant.relationship}`,
 
 						`Email\n  ${credit.applicant2.email}`,
-						`Relationship\n  ${credit.applicant2.relationship}`,
+						//"",//`Relationship\n  ${credit.applicant2.relationship}`,
 						
 					],
 				],
 			},
 			startX,
 			startY + rowHeight * 11,
-			[166, 126, 166, 127],
+			[166, 126, 166+ 127],
 			rowHeight
 		);
 
