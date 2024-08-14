@@ -64,6 +64,7 @@ const orderRoutes = require("./api/routes/orders");
 const brandRoutes = require("./api/routes/brands");
 const modelRoutes = require("./api/routes/models");
 const creditRoutes = require("./api/routes/credit");
+const creditCardRoutes = require("./api/routes/creditcard");
 
 app.use("/roles", rolesRoutes);
 app.use("/auth", authRoutes);
@@ -79,6 +80,7 @@ app.use("/orders", orderRoutes);
 app.use("/brands", brandRoutes);
 app.use("/models", modelRoutes);
 app.use("/credit", creditRoutes);
+app.use("/creditcard", creditCardRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");

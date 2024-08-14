@@ -96,6 +96,7 @@ const creditSchema = new Schema({
   employee: { type: approvalSchema, required: false },
   employee2: { type: approvalSchema, required: false },
   date: { type: Date, required: false },
+  lead: { type: String, required: false },
   createdBy: {
     type: String,
     ref: "Users",

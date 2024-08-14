@@ -1,11 +1,11 @@
-const Credit = require("../models/credit");
+const Credit = require("../models/creditcard");
 const PDFDocument = require("pdfkit");
 
 let userTimeZone = "America/Caracas";
 
 module.exports.list = async (req, res, next) => {
 
-	console.log("credit list")
+	console.log("credit card list")
 	try {
 
 		/*
@@ -35,8 +35,8 @@ module.exports.list = async (req, res, next) => {
 			createdBy: req.query.user_id
 		};
 
-		
-		
+
+
 		const count = await Credit.count(cond);
 		let orders = await Credit.find(cond)
 			.limit(parseInt(limit))
@@ -78,12 +78,12 @@ module.exports.list = async (req, res, next) => {
 			return order;
 		  });
 	*/
-		
-console.log({
-	//data: orders.map((o)=>{return {id:o.id, buyer1:o.buyer1, system1:o.system1, price: o.price}; }),
-	data: orders,
-	count,
-})
+
+		console.log({
+			//data: orders.map((o)=>{return {id:o.id, buyer1:o.buyer1, system1:o.system1, price: o.price}; }),
+			data: orders,
+			count,
+		})
 		res.status(200).json({
 			//data: orders.map((o)=>{return {id:o.id, buyer1:o.buyer1, system1:o.system1, price: o.price}; }),
 			data: orders,
@@ -97,102 +97,50 @@ console.log({
 
 module.exports.details = async (req, res, next) => {
 
-	
-	
+
 	try {
 
 		let condition = {};
-		if (req.query.leadId ) {
-			condition = { lead: req.query.leadId};
-		} else  {
+		if (req.query.leadId) {
+			condition = { lead: req.query.leadId };
+		} else {
 			condition = { _id: req.query.id };
 		}
-		
+
 		let order = await Credit.findOne(condition).lean();
-		
+
+		console.log({
+			data: order,
+			message: "record recovery correctly!",
+		});
 		res.status(200).json({
 			data: order,
 			message: "record recovery correctly!",
 		});
 	} catch (e) {
-		
+
 		res.status(400).json(e);
 	}
 };
 
 module.exports.add = async (req, res) => {
 
-	
+
 
 	try {
 		const orderData = req.body;
 		orderData._id = undefined;
 
-		/*
-		orderData.applicant.signature = Buffer.from(
-			orderData.applicant.signature,
-			"base64"
-		);
-		orderData.applicant.signature = Buffer.from(
-			orderData.applicant.signature,
+
+		orderData.signature = Buffer.from(
+			orderData.signature,
 			"base64"
 		);
 
-		orderData.employee.signature = Buffer.from(
-			orderData.employee.signature,
-			"base64"
-		);
-		orderData.approvedBy.signature = Buffer.from(
-			orderData.approvedBy.signature,
-			"base64"
-		);
-
-		*/
-
-
-		
-
-		orderData.applicant.signature = Buffer.from(
-			orderData.applicant.signature,
-			"base64"
-		);
-
-		orderData.applicant2.signature = Buffer.from(
-			orderData.applicant2.signature,
-			"base64"
-		);
-
-
-		orderData.employee.signature = Buffer.from(
-			orderData.employee.signature,
-			"base64"
-		);
-
-		
 
 		orderData.createdOn = Date.now();
 		orderData.updatedOn = Date.now();
-		//orderData.createdBy = req.body.user_id || "xxxx";
 
-		/*if (orderData.system1){
-							orderData.system1._id = undefined
-						}
-						if (orderData.system2){
-							orderData.system2._id = undefined
-						}
-				
-						if (orderData.buyer1){
-							orderData.buyer1._id = undefined
-						}
-				
-						if (orderData.buyer2){
-							orderData.buyer2._id = undefined
-						}
-						console.log(orderData);
-						orderData.installation._id = undefined
-						orderData.price._id = undefined
-						orderData.price.terms._id = undefined
-						*/
 		const newOrder = new Credit(orderData);
 		await newOrder.save();
 
@@ -203,8 +151,8 @@ module.exports.add = async (req, res) => {
 		newOrder.approvedBy.signature = newOrder.approvedBy.signature.toString("base64");
 
 		*/
-		let order = await Credit.findOne({_id: newOrder._id}).lean();
-		
+		let order = await Credit.findOne({ _id: newOrder._id }).lean();
+
 
 		res
 			.status(201)
@@ -219,54 +167,21 @@ module.exports.edit = async (req, res, next) => {
 	try {
 		const orderData = req.body;
 
-		
+
 		const id = orderData._id;
 
 
-		orderData.applicant.signature = Buffer.from(
-			orderData.applicant.signature,
-			"base64"
-		);
-
-		orderData.applicant2.signature = Buffer.from(
-			orderData.applicant2.signature,
+		orderData.signature = Buffer.from(
+			orderData.signature,
 			"base64"
 		);
 
 
-		orderData.employee.signature = Buffer.from(
-			orderData.employee.signature,
-			"base64"
-		);
 
 
-		
-		//orderData._id = undefined
-
-		/*
-		orderData.buyer1.signature = Buffer.from(
-			orderData.buyer1.signature,
-			"base64"
-		);
-		orderData.buyer2.signature = Buffer.from(
-			orderData.buyer2.signature,
-			"base64"
-		);
-
-		orderData.employee.signature = Buffer.from(
-			orderData.employee.signature,
-			"base64"
-		);
-		orderData.approvedBy.signature = Buffer.from(
-			orderData.approvedBy.signature,
-			"base64"
-		);
-
-		*/
-		//orderData.createdOn = Date.now(),
 		orderData.updatedOn = Date.now();
-		
-		
+
+
 
 		let order = await Credit.findByIdAndUpdate(
 			id,
@@ -276,10 +191,10 @@ module.exports.edit = async (req, res, next) => {
 			{ new: true }
 		).lean();
 
-		
-		res.status(201).json({ data: order, message: "Order updated correctly!" });
+
+		res.status(201).json({ data: order, message: "Record updated correctly!" });
 	} catch (e) {
-		
+
 		res.status(400).json(e);
 	}
 };
@@ -289,13 +204,13 @@ module.exports.delete = async (req, res, next) => {
 	let deletedOrder = await Credit.deleteOne({ _id: id });
 
 	if (deletedOrder.deletedCount > 0) {
-		
+
 		res.status(200).json({
 			data: deletedOrder,
-			message: "Order deleted successfully",
+			message: "Record deleted successfully",
 		});
 	} else {
-		
+
 		res.status(404).json({
 			message: "no Order found",
 			data: {},
@@ -303,42 +218,6 @@ module.exports.delete = async (req, res, next) => {
 	}
 };
 
-module.exports.pdf1 = async (req, res, next) => {
-	try {
-		let id = req.query.id;
-		//let id = "667c62fa99db989127642954";
-		let order = await Credit.findOne({ _id: id });
-
-		// Crear una nueva instancia de PDFDocument
-		const doc = new PDFDocument();
-
-		// Configurar el encabezado de respuesta para enviar un PDF
-		res.setHeader("Content-Type", "application/pdf");
-		res.setHeader("Content-Disposition", "attachment; filename=order.pdf");
-
-		// Pipe del PDF a la respuesta HTTP
-		doc.pipe(res);
-
-		// Agregar contenido al PDF
-		doc.fontSize(25).text("Detalles de la Orden", { align: "center" });
-
-		// Agregar detalles de la orden
-		doc.moveDown();
-		doc.fontSize(fontSize2).text(`ID de la Orden: ${order._id}`);
-		doc.text(`Cliente: ${order.city}`);
-		doc.text(`Total: $${order.city}`);
-		doc.text(`Fecha: ${order.city}`);
-
-		// Agregar una línea
-		doc.moveDown().moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-
-		// Finalizar el documento
-		doc.end();
-	} catch (e) {
-		
-		res.status(400).json(e);
-	}
-};
 
 module.exports.pdf = async (req, res, next) => {
 
@@ -347,7 +226,8 @@ module.exports.pdf = async (req, res, next) => {
 
 	const text = {
 
-		title: "CREDIT APPLICATION / APLICACION DE CREDITO",
+		title: "CREDIT CARD AUTHORIZATION",
+		note1: "I hereby authorize Aquafeel Solutions to charge the following credit card for merchandise shipping and invoice totals.",
 		subtitle1: "Applicant",
 		subtitle2: "Co Applicant",
 		subtitle3: "MORTGAGE INFORMATION / INFORMACION SOBRE SU CASA",
@@ -401,21 +281,21 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 	const fontSize = 16;
 	const fontTitle = 9;
 	const bodyWidth = 585;
-	const cellFontSize = 8;
-	const noteFontSize = 7;
+	const cellFontSize = 9;
+	const noteFontSize = 8;
 	const startX = 15;
 	const startY = 25;
 
-	const rowHeight = 22;
+	const rowHeight = 26;
 
-	
+
 	try {
-		
+
 		let id = req.query.id;
 		userTimeZone = req.query.userTimeZone || userTimeZone;
 		let credit = await Credit.findOne({ _id: id }).populate("createdBy");
 
-		
+
 		if (!credit) {
 			return res.status(404).json({ message: "Order not found" });
 		}
@@ -448,7 +328,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		});
 
 
-		
+
 
 		//doc.image('uploads/Aquafeel-Blue-Logo.png', 0, 15, {width: 250})
 		// .text('Proportional to width', 0, 0);
@@ -467,18 +347,169 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				//headers: [],
 				rows: [
 					[
-						text.subtitle1,
-						text.subtitle2,
-						
+						`DATE: \n    ${localDate(credit.date)}`,
+						`AMOUNT: \n    ${credit.amount}`,
+						`COUNTRY: \n    ${credit.country}`,
+
 					]
 				],
 			},
 			startX,
 			startY + rowHeight * 4,
-			[292, 293],
+			[195, 195, 195],
 			rowHeight
 		);
+
+		drawTable(
+			doc,
+			{
+				//headers: [],
+				rows: [
+					[
+						`CUSTOMER NAME: \n    ${credit.firstName + " " + credit.lastName}`,
+						`PHONE: \n    ${credit.phone}`,
+
+
+					]
+				],
+			},
+			startX,
+			startY + rowHeight * 5,
+			[195 + 195, 195],
+			rowHeight
+		);
+
+		drawTable(
+			doc,
+			{
+				//headers: [],
+				rows: [
+					[
+						`CUSTOMER ADDRESS: \n    ${credit.address}`,
+						`CITY: \n    ${credit.city}`,
+						`STATE: \n    ${credit.state}`,
+						`ZIP: \n    ${credit.zip}`,
+
+
+					]
+				],
+			},
+			startX,
+			startY + rowHeight * 6,
+			[295, 95, 120, 75],
+			rowHeight
+		);
+
+		doc.fontSize(cellFontSize).text("", startX, startY + rowHeight * 8);
+		doc.fontSize(fontTitle).text(text.note1, {
+			width: 585,
+			align: "center",
+		});
+
+		doc.fontSize(cellFontSize);
+
+		drawTable(
+			doc,
+			{
+				//headers: [],
+				rows: [
+					[
+						`NAME AS APPEARS ON THE CARD: \n    ${credit.nameCard}`,
+						`DRIVERS LICENSE: \n    ${credit.license}`,
+
+
+
+					]
+				],
+			},
+			startX,
+			startY + rowHeight * 9,
+			[295 + 95, 195],
+			rowHeight
+		);
+
+		drawTable(
+			doc,
+			{
+				//headers: [],
+				rows: [
+					[
+						`CREDIT CARD: \n    ${credit.numberCard}`,
+						`EXP DATE: \n    ${localDate(credit.expCard)}`,
+						`TYPE: \n    ${credit.typeCard}`,
+						`CVC: \n    ${credit.cvcCard}`,
+
+
+
+					]
+				],
+			},
+			startX,
+			startY + rowHeight * 10,
+			[295, 95, 120, 75],
+			rowHeight
+		);
+
+		drawTable(
+			doc,
+			{
+				//headers: [],
+				rows: [
+					[
+						`PRODUCTS:: \n    ${credit.products}`,
+
+
+					]
+				],
+			},
+			startX,
+			startY + rowHeight * 12,
+			[bodyWidth],
+			rowHeight
+		);
+
+		let sign001 = (credit.signature.length > 0) ? { content: credit.signature } : "( no signature )";
 		
+
+		drawTab(
+			doc,
+			{
+				//headers: [],
+				rows: [
+
+					[
+						sign001, "\n\n  " + localDate(credit.date)
+
+
+					],
+					[
+						"________________________\nAUTHORIZED DATE\nCARD HOLDER SIGNATURE",
+						"_________________\nDate",
+						
+
+
+					],
+				],
+			},
+			startX + 20,
+			startY + rowHeight * 14,
+			[146 + 146, 146 + 147],
+			rowHeight
+		);
+
+		
+
+		doc.fontSize(cellFontSize).text("", startX, startY + rowHeight * 27);
+		doc.fontSize(noteFontSize).text(text.subtitle12, {
+			width: 585,
+			align: "center",
+		});
+
+		doc.end();
+
+		return
+
+
 
 		doc.fontSize(fontSize).text("", startX, rowHeight);
 		const data = {
@@ -495,21 +526,21 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					`CEL: ${credit.applicant2.cel}`,
 				],
 			],
-		
-		
+
+
 		};
 
-		
-		
+
+
 
 		doc.fontSize(cellFontSize);
-		
+
 		drawTable(
 			doc,
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Last name\n  ${credit.applicant.lastName}`,
 						`First Name\n  ${credit.applicant.firstName}`,
@@ -548,11 +579,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Address\n  ${credit.applicant.address}`,
 						`Address\n  ${credit.applicant2.address}`,
-						
+
 					],
 				],
 			},
@@ -567,7 +598,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`City\n  ${credit.applicant.city}`,
 						`State\n  ${credit.applicant.state}`,
@@ -576,7 +607,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 						`City\n  ${credit.applicant2.city}`,
 						`State\n  ${credit.applicant2.state}`,
 						`Zip\n  ${credit.applicant2.zip}`,
-						
+
 					],
 				],
 			},
@@ -592,20 +623,20 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Email\n  ${credit.applicant.email}`,
 						`Relationship\n  ${credit.applicant.relationship}`,
 
 						`Email\n  ${credit.applicant2.email}`,
 						//"",//`Relationship\n  ${credit.applicant2.relationship}`,
-						
+
 					],
 				],
 			},
 			startX,
 			startY + rowHeight * 11,
-			[166, 126, 166+ 127],
+			[166, 126, 166 + 127],
 			rowHeight
 		);
 
@@ -615,11 +646,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						text.subtitle3,
-						
-						
+
+
 					],
 				],
 			},
@@ -634,14 +665,14 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Status\n  ${credit.mortgage.status}`,
 						`mortgage Company\n  ${credit.mortgage.mortgageCompany}`,
 
 						`Monthly Payment\n  ${credit.mortgage.monthlyPayment}`,
 						`How Long Here\n  ${credit.mortgage.howlong}`,
-						
+
 					],
 				],
 			},
@@ -656,17 +687,17 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						text.subtitle5,
 						text.subtitle5,
-						
+
 					],
 				],
 			},
 			startX,
 			startY + rowHeight * 14,
-			[166+ 126, 166 + 127],
+			[166 + 126, 166 + 127],
 			rowHeight
 		);
 
@@ -676,16 +707,16 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Employer\n  ${credit.applicant.income.employer}`,
 						`Years\n  ${credit.applicant.income.years}`,
 						`Salary\n  ${credit.applicant.income.salary}`,
-						
+
 						`Employer\n  ${credit.applicant2.income.employer}`,
 						`Years\n  ${credit.applicant2.income.years}`,
 						`Salary\n  ${credit.applicant2.income.salary}`,
-						
+
 					],
 				],
 			},
@@ -701,15 +732,15 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Position\n  ${credit.applicant.income.position}`,
 						`Business Phone\n  ${credit.applicant.income.phone}`,
-						
-						
+
+
 						`Position\n  ${credit.applicant2.income.position}`,
 						`Business Phone\n  ${credit.applicant2.income.phone}`,
-						
+
 					],
 				],
 			},
@@ -725,11 +756,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`PREVIOUS EMPLOYER (IF ABOVE LESS THAN 3 YEARS) \n  ${credit.applicant.income.preEmployer}`,
 						`PREVIOUS EMPLOYER (IF ABOVE LESS THAN 3 YEARS)\n  ${credit.applicant2.income.preEmployer}`,
-						
+
 					],
 				],
 			},
@@ -772,11 +803,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`SOURCE OF OTHER INCOME / ORIGEN DE OTRO INGRESO \n  ${credit.applicant.income.otherIncome}`,
 						`SOURCE OF OTHER INCOME / ORIGEN DE OTRO INGRESO\n  ${credit.applicant2.income.otherIncome}`,
-						
+
 					],
 				],
 			},
@@ -791,11 +822,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						text.subtitle6,
-						
-						
+
+
 					],
 				],
 			},
@@ -810,18 +841,18 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Name \n  ${credit.reference.name}`,
 						`Relationship\n  ${credit.reference.relationship}`,
 						`Phone\n  ${credit.reference.phone}`,
-						
+
 					],
 					[
 						`Name \n  ${credit.reference2.name}`,
 						`Relationship\n  ${credit.reference2.relationship}`,
 						`Phone\n  ${credit.reference2.phone}`,
-						
+
 					],
 				],
 			},
@@ -836,13 +867,13 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						`Bank Name \n  ${credit.bank.name}`,
 						`Account Number\n  ${credit.bank.accountNumber}`,
 						`Routing Number\n  ${credit.bank.routingNumber}`,
 						`Checking: ${credit.bank.checking ? "Yes" : "No"}\nSaving: ${credit.bank.saving ? "Yes" : "No"}`
-						
+
 					]
 				],
 			},
@@ -860,28 +891,28 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		});
 
 
-		let sign01 = ( credit.applicant.signature.length > 0) ? { content: credit.applicant.signature } : "( no signature )";
-		let sign02 = ( credit.applicant2.signature.length > 0) ? { content: credit.applicant2.signature } : "( no signature )";
-		let sign03 = ( credit.employee.signature.length > 0) ? { content: credit.employee.signature } : "( no signature )";
+		let sign01 = (credit.applicant.signature.length > 0) ? { content: credit.applicant.signature } : "( no signature )";
+		let sign02 = (credit.applicant2.signature.length > 0) ? { content: credit.applicant2.signature } : "( no signature )";
+		let sign03 = (credit.employee.signature.length > 0) ? { content: credit.employee.signature } : "( no signature )";
 
 		drawTab(
 			doc,
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
 						sign01, "\n\n  " + localDate(credit.applicant.date), sign02, "\n\n  " + localDate(credit.applicant2.date)
-						
-						
+
+
 					],
 					[
 						"________________________\nSignature / Firma",
 						"_________________\nDate / Fecha",
 						"________________________\nSignature / Firma",
 						"_________________\nDate / Fecha"
-						
-						
+
+
 					],
 				],
 			},
@@ -896,16 +927,16 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			{
 				//headers: [],
 				rows: [
-					
+
 					[
-						`\n\n${(credit.createdBy?.firstName || "") + (" " + credit.createdBy?.lastName || "") }` ,
+						`\n\n${(credit.createdBy?.firstName || "") + (" " + credit.createdBy?.lastName || "")}`,
 						sign03,
-						
+
 					],
 					[
-						`________________________\nREP. DE AQUAFEEL SOLUTIONS` ,
+						`________________________\nREP. DE AQUAFEEL SOLUTIONS`,
 						"________________________\nSignature / Firma",
-						
+
 					],
 				],
 			},
@@ -924,299 +955,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 		doc.end();
 
-		return;
 
-		
-		const data7 = {
-			//headers: [],
-			rows: [
-				[
-					`ADDRESS: ${credit.address}`,
-					`CITY: ${credit.city}`,
-					`STATE: ${credit.state}`,
-					`ZIP: ${credit.zip}`,
-				],
-			],
-		};
-
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data7,
-			startX,
-			startY + rowHeight * 6,
-			[275, 110, 110, 90],
-			rowHeight
-		);
-
-		doc.fontSize(noteFontSize).text("", startX, startY + rowHeight * 7.1);
-		//doc.fontSize(noteFontSize).text(text1, startX, startY + rowHeight * 7.1);
-		doc.fontSize(noteFontSize).text(AquafeelSolutions, {
-			width: 585,
-			align: "left",
-		});
-
-		const data2 = {
-			//headers: [],
-			rows: [
-				[
-					`Name: ${credit.system1.name}`,
-					`Brand: ${credit.system1.brand}`,
-					`Model: ${credit.system1.model}`,
-				],
-				[
-					`Name: ${credit.system2.name}`,
-					`Brand: ${credit.system2.brand}`,
-					`Model: ${credit.system2.model}`,
-				],
-				//[`Other \n  ${order.promotion}`, ``, ``],
-			],
-		};
-
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data2,
-			startX,
-			startY + rowHeight * 8,
-			[195, 195, 195],
-			rowHeight
-		);
-
-		const data9 = {
-			//headers: [],
-			rows: [[`Other / Promotion: ${credit.promotion}`]],
-		};
-
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data9,
-			startX,
-			startY + rowHeight * 10,
-			[bodyWidth],
-			rowHeight
-		);
-
-		//doc.moveDown();
-		//doc.fontSize(cellFontSize).text(text1, { align: "center" });
-
-		doc.fontSize(cellFontSize).text("", startX, startY + rowHeight * 12);
-		doc.fontSize(fontTitle).text("INSTALLATION INSTRUCTIONS", {
-			width: 585,
-			align: "center",
-		});
-		
-
-		
-		const data3 = {
-			//headers: ['A', 'B', 'C', "D"],
-			rows: [
-				[
-					`DAY OF INTALLATION: ${credit.installation.day}`,
-					`DATE: ${credit.installation.date.toLocaleDateString('en-US')}`,
-					`CONEXION ICE MAKER: ${credit.installation.iceMaker ? "Yes" : "No"}`,
-					`TIME: ${credit.installation.date.toLocaleTimeString('en-US')}`,
-				],
-			],
-		};
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data3,
-			startX,
-			startY + rowHeight * 13,
-			[146, 146, 146, 146],
-			rowHeight
-		);
-
-		const data31 = {
-			//headers: ['A', 'B', 'C', "D"],
-			rows: [
-				[
-					`People involved: ${credit.people}`,
-					`Floor Type: ${credit.floorType}`,
-				],
-			],
-		};
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data31,
-			startX,
-			startY + rowHeight * 14,
-			[292, 292],
-			rowHeight
-		);
-
-		//doc.lineJoin("miter").rect(5, 10, 5, 5).stroke();
-
-		doc.fontSize(fontTitle).text("", startX, rowHeight * 17);
-		doc.fontSize(fontTitle).text("Terms or Payment Methods".toUpperCase(), {
-			width: 585,
-			align: "center",
-		});
-
-		const data21 = {
-			//headers: [],
-			rows: [
-				[
-					`CREDIT CARD (SIGNED ATTACHED FORM): ${credit.creditCard ? "Yes" : "No"
-					}`,
-					`CHECK (PAYABLE TO AQUAFEEL SOLUTIONS): ${credit.check ? "Yes" : "No"
-					}`,
-				],
-			],
-		};
-
-		doc.moveDown();
-		doc.moveDown();
-		doc.moveDown();
-		doc.moveDown();
-		doc.fontSize(noteFontSize).text("\n" + UPON_SIGNING, {
-			width: bodyWidth,
-			align: "justified",
-		});
-
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data21,
-			startX,
-			startY + rowHeight * 17,
-			[294, 293],
-			rowHeight
-		);
-
-		// Sección: Información de Precios
-		const data4 = {
-			headers: [
-				"Cash Price",
-				"Installation",
-				"Taxes",
-				"Total Cash Sales Price",
-				"Total Downpayment",
-				"Total Cash Price",
-			],
-			rows: [
-				[
-					credit.price.cashPrice,
-					credit.price.installation,
-					credit.price.taxes,
-					credit.price.totalCash,
-					credit.price.downPayment,
-					credit.price.totalCashPrice,
-				],
-			],
-		};
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data4,
-			startX,
-			startY + rowHeight * 20,
-			[100, 85, 80, 100, 100, 120],
-			rowHeight,
-			"center"
-		);
-
-		const data5 = {
-			headers: [
-				"Amount to Finance",
-				"Payment Terms",
-				"A.P.R",
-				"Finance Charge",
-				"Total of Payments",
-			],
-			rows: [
-				[
-					credit.price.toFinance,
-					`${credit.price.terms.amount} ${credit.price.terms.unit}`,
-					credit.price.APR,
-					credit.price.finaceCharge,
-					credit.price.totalPayments,
-				],
-			],
-		};
-		doc.fontSize(cellFontSize);
-		drawTable(
-			doc,
-			data5,
-			startX,
-			startY + rowHeight * 23,
-			[105, 120, 120, 120, 120],
-			rowHeight,
-			"center"
-		);
-
-		doc.fontSize(cellFontSize).text("", startX, rowHeight * 27);
-		doc.fontSize(noteFontSize).text(DO_NOT_SIGNED.toUpperCase(), {
-			width: 585,
-			align: "left",
-		});
-
-		let sign1 = ( credit.buyer1.signature.length > 0) ? { content: credit.buyer1.signature } : "( no signature )";
-		let sign2 = ( credit.buyer2.signature.length > 0) ? { content: credit.buyer2.signature } : "( no signature )";
-		let sign3 = ( credit.employee.signature.length > 0) ? { content: credit.employee.signature } : "( no signature )";
-		let sign4 = ( credit.approvedBy.signature.length > 0) ? { content: credit.approvedBy.signature } : "( no signature )";
-
-		const data6 = {
-			//headers: ['Amount to Finance', 'Payment Terms', 'A.P.R', "Finance Charge", "Total of Payments"],
-			rows: [
-				[
-					"APROVAL / BUYER 1",
-					sign1,
-					"DATE",
-					`${credit.buyer1.date.toLocaleDateString('en-US')}`,
-				],
-				[
-					"APROVAL / BUYER 2",
-					sign2,
-					"DATE",
-					`${credit.buyer2.date.toLocaleDateString('en-US')}`,
-				],
-				[
-					`${(credit.createdBy?.firstName || "") + (" " + credit.createdBy?.lastName || "") }\nREP. DE AQUAFEEL SOLUTIONS` ,
-					sign3,
-					"",//"APROB. OF CENTRAL",
-					"",//sign4,
-				],
-			],
-		};
-		doc.fontSize(cellFontSize);
-		drawTab(
-			doc,
-			data6,
-			startX,
-			startY + rowHeight * 28 - 15,
-			[106, 186, 166, 126],
-			rowHeight * 1.5
-		);
-
-		doc.fontSize(cellFontSize).text("\n", startX, startY + rowHeight * 31.5);
-		doc.fontSize(noteFontSize).text(THIS_CONTRACT_IS + "\n", {
-			width: bodyWidth,
-			align: "justify",
-		});
-		doc.fontSize(noteFontSize).text("\n" + TEXT_230_Capcom, {
-			width: bodyWidth,
-			align: "center",
-		});
-
-		doc.addPage({
-			margins: {
-				top: 72,
-				bottom: 0,
-				left: 72,
-				right: 72,
-			},
-		});
-
-		
-
-		doc.fontSize(8).text(termsAndConditions);
-
-		doc.end();
 	} catch (e) {
 		console.log(e)
 		res.status(400).json(e);
@@ -1250,9 +989,9 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 		row.forEach((cell, i) => {
 			if (typeof cell === 'string' || typeof cell === 'number') {
 
-				if(typeof cell === 'string'){
+				if (typeof cell === 'string') {
 					cell = cell.toUpperCase();
-				} 
+				}
 
 				doc.text(cell, x + 5, y + 5, {
 					width: columnWidths[i] - 10,
@@ -1260,9 +999,9 @@ function drawTab(doc, data, startX, startY, columnWidths, rowHeight) {
 				});
 			} else {
 
-				
+
 				const imgBase64 = cell.content.toString('base64');
-				
+
 				const imgDataUrl = `data:image/png;base64,${imgBase64}`;
 				doc.image(imgDataUrl, x + 15, y + 15 - 20 + 7, {
 					fit: [columnWidths[i] - 1, rowHeight - 1 + 10],
@@ -1340,9 +1079,9 @@ function drawTable(
 	data.rows.forEach((row) => {
 		x = startX;
 		row.forEach((cell, i) => {
-			if(typeof cell === 'string'){
+			if (typeof cell === 'string') {
 				cell = cell.toUpperCase();
-			} 
+			}
 			doc.text(cell, x + 5, y + 5, {
 				width: columnWidths[i] - 10,
 				align: align,
@@ -1456,8 +1195,8 @@ function drawTable1(doc, data, startX, startY, columnWidths, rowHeight) {
 	});
 }
 
-function localDate( date) {
-	if(!date){
+function localDate(date) {
+	if (!date) {
 		return "";
 	}
 
@@ -1472,12 +1211,12 @@ function localDate( date) {
 	//console.log(dateInUserTZ, formattedDate)
 
 	return formattedDate;
-	
+
 }
 
-function localTime( date) {
+function localTime(date) {
 
-	if(!date){
+	if (!date) {
 		return "";
 	}
 
@@ -1489,10 +1228,10 @@ function localTime( date) {
 	const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
 	const formattedDate = dateInUserTZ.toLocaleTimeString('en-US'/*, options*/);
 
-	
+
 
 	return formattedDate;
 
-	
-	
+
+
 }
