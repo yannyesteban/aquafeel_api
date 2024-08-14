@@ -5,7 +5,7 @@ let userTimeZone = "America/Caracas";
 
 module.exports.list = async (req, res, next) => {
 
-	console.log("credit list")
+	
 	try {
 
 		/*
@@ -551,7 +551,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					
 					[
 						`Address\n  ${credit.applicant.address}`,
-						`Address\n  ${credit.applicant2.address}`,
+						`Address\n  ${credit.applicant.address}`,
 						
 					],
 				],
@@ -573,16 +573,16 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 						`State\n  ${credit.applicant.state}`,
 						`Zip\n  ${credit.applicant.zip}`,
 
-						`City\n  ${credit.applicant2.city}`,
-						`State\n  ${credit.applicant2.state}`,
-						`Zip\n  ${credit.applicant2.zip}`,
+						`City\n  ${credit.applicant.city}`,
+						`State\n  ${credit.applicant.state}`,
+						`Zip\n  ${credit.applicant.zip}`,
 						
 					],
 				],
 			},
 			startX,
 			startY + rowHeight * 10,
-			[97, 97, 98, 97, 97, 99],
+			[127, 87, 78, 127, 87, 79],
 			rowHeight
 		);
 
