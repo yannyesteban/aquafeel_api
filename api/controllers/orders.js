@@ -337,7 +337,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		res.setHeader("Content-Type", "application/pdf");
 		doc.pipe(res);
 
-		doc.font("Times-Roman");
+		doc.font("Times-Bold");
 
 		//doc.image('uploads/Aquafeel-Blue-Logo.png', 0, 15, {width: 250})
 		// .text('Proportional to width', 0, 0);
@@ -354,20 +354,20 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			width: bodyWidth,
 			align: "center",
 		});
-
+		doc.font("Times-Roman");
 		doc.fontSize(fontSize).text("", startX, rowHeight);
 		const data = {
 			//headers: [],
 			rows: [
 				[
-					`BUYER 1: ${order.buyer1.name}`,
-					`PHONE 1: ${order.buyer1.phone}`,
-					`CEL: ${order.buyer1.cel}`,
+					`BUYER 1:* ${order.buyer1.name}`,
+					`PHONE 1:* ${order.buyer1.phone}`,
+					`CEL:* ${order.buyer1.cel}`,
 				],
 				[
-					`BUYER 2: ${order.buyer2.name}`,
-					`PHONE 2: ${order.buyer2.phone}`,
-					`CEL: ${order.buyer2.cel}`,
+					`BUYER 2:* ${order.buyer2.name}`,
+					`PHONE 2:* ${order.buyer2.phone}`,
+					`CEL:* ${order.buyer2.cel}`,
 				],
 			],
 		};
@@ -386,10 +386,10 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			//headers: [],
 			rows: [
 				[
-					`ADDRESS: ${order.address}`,
-					`CITY: ${order.city}`,
-					`STATE: ${order.state}`,
-					`ZIP: ${order.zip}`,
+					`ADDRESS:* ${order.address}`,
+					`CITY:* ${order.city}`,
+					`STATE:* ${order.state}`,
+					`ZIP:* ${order.zip}`,
 				],
 			],
 		};
@@ -400,7 +400,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			data7,
 			startX,
 			startY + rowHeight * 6,
-			[275, 110, 110, 90],
+			[275, 130, 100, 80],
 			rowHeight
 		);
 
@@ -436,7 +436,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			//headers: [],
 			rows: [
 				[
-					`Water System Treatment: \n${list}`
+					`Water System Treatment:* \n${list}`
 				]
 				//[`Other \n  ${order.promotion}`, ``, ``],
 			],
@@ -521,10 +521,10 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			//headers: ['A', 'B', 'C', "D"],
 			rows: [
 				[
-					`DAY OF INTALLATION: ${order.installation.day}`,
-					`DATE: ${localDate(order.installation.date)}`,
-					`CONEXION ICE MAKER: ${order.installation.iceMaker ? "Yes" : "No"}`,
-					`TIME: ${localTime(order.installation.date)}`,
+					`DAY OF INTALLATION:* ${order.installation.day}`,
+					`DATE:* ${localDate(order.installation.date)}`,
+					`CONEXION ICE MAKER:* ${order.installation.iceMaker ? "Yes" : "No"}`,
+					`TIME:* ${localTime(order.installation.date)}`,
 				],
 			],
 		};
@@ -534,7 +534,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			data3,
 			startX,
 			startY + rowHeight * 13,
-			[146, 146, 146, 146],
+			[176, 116, 146, 146],
 			rowHeight
 		);
 
@@ -542,8 +542,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			//headers: ['A', 'B', 'C', "D"],
 			rows: [
 				[
-					`People involved: ${order.people}`,
-					`Floor Type: ${order.floorType}`,
+					`People involved:* ${order.people}`,
+					""//`Floor Type: ${order.floorType}`,
 				],
 			],
 		};
@@ -569,9 +569,9 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			//headers: [],
 			rows: [
 				[
-					`CREDIT CARD (SIGNED ATTACHED FORM): ${order.creditCard ? "Yes" : "No"
+					`CREDIT CARD (SIGNED ATTACHED FORM):* ${order.creditCard ? "Yes" : "No"
 					}`,
-					`CHECK (PAYABLE TO AQUAFEEL SOLUTIONS): ${order.check ? "Yes" : "No"
+					`CHECK (PAYABLE TO AQUAFEEL SOLUTIONS):* ${order.check ? "Yes" : "No"
 					}`,
 				],
 			],
@@ -608,12 +608,12 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			],
 			rows: [
 				[
-					order.price.cashPrice,
-					order.price.installation,
-					order.price.taxes,
-					order.price.totalCash,
-					order.price.downPayment,
-					order.price.totalCashPrice,
+					"*"+ order.price.cashPrice,
+					"*" + order.price.installation,
+					"*" + order.price.taxes,
+					"*" + order.price.totalCash,
+					"*" + order.price.downPayment,
+					"*" + order.price.totalCashPrice,
 				],
 			],
 		};
@@ -638,11 +638,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			],
 			rows: [
 				[
-					order.price.toFinance,
-					`${order.price.terms.amount} ${order.price.terms.unit}`,
-					order.price.APR + " %",
-					order.price.finaceCharge,
-					order.price.totalPayments,
+					"*" + order.price.toFinance,
+					"*" + `${order.price.terms.amount} ${order.price.terms.unit}`,
+					"*" + order.price.APR + " %",
+					"*" + order.price.finaceCharge,
+					"*" + order.price.totalPayments,
 				],
 			],
 		};
@@ -847,14 +847,33 @@ function drawTable(
 	// Dibujar filas y líneas horizontales
 	data.rows.forEach((row) => {
 		x = startX;
+		let cells = [];
 		row.forEach((cell, i) => {
-			if(typeof cell === 'string'){
+			if (typeof cell === 'string') {
 				cell = cell.toUpperCase();
-			} 
-			doc.text(cell, x + 5, y + 5, {
-				width: columnWidths[i] - 10,
-				align: align,
-			});
+
+				cells = cell.split("*");
+			
+			}
+			//doc.font("Times-Roman");
+			if(cells[1]) {
+				doc.text(cells[0], x + 5, y + 5, {
+					width: columnWidths[i] - 10,
+					align: align,
+					continued: true
+				});
+				doc.font("Times-Bold").text(cells[1], {
+					width: columnWidths[i] - 10,
+					align: align,
+				});
+				doc.font("Times-Roman");
+			}else{
+				doc.text(cell, x + 5, y + 5, {
+					width: columnWidths[i] - 10,
+					align: align,
+				});
+			}
+			
 			x += columnWidths[i];
 		});
 

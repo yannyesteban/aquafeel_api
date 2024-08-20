@@ -316,7 +316,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		res.setHeader("Content-Type", "application/pdf");
 		doc.pipe(res);
 
-		doc.font("Times-Roman");
+		doc.font("Times-Bold");
 
 
 		doc.moveDown();
@@ -325,10 +325,11 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		doc.fontSize(cellFontSize).text(text.title, {
 			width: 585,
 			align: "center",
+			continued: true
 		});
 
-
-
+		doc.font("Times-Roman");
+		
 
 		//doc.image('uploads/Aquafeel-Blue-Logo.png', 0, 15, {width: 250})
 		// .text('Proportional to width', 0, 0);
@@ -1078,14 +1079,33 @@ function drawTable(
 	// Dibujar filas y líneas horizontales
 	data.rows.forEach((row) => {
 		x = startX;
+		let cells = [];
 		row.forEach((cell, i) => {
 			if (typeof cell === 'string') {
 				cell = cell.toUpperCase();
+
+				cells = cell.split("\n");
+			
 			}
-			doc.text(cell, x + 5, y + 5, {
-				width: columnWidths[i] - 10,
-				align: align,
-			});
+			//doc.font("Times-Roman");
+			if(cells[1]) {
+				doc.text(cells[0], x + 5, y + 5, {
+					width: columnWidths[i] - 10,
+					align: align,
+					continued: true
+				});
+				doc.font("Times-Bold").text("\n" + cells[1], {
+					width: columnWidths[i] - 10,
+					align: align,
+				});
+				doc.font("Times-Roman");
+			}else{
+				doc.text(cell, x + 5, y + 5, {
+					width: columnWidths[i] - 10,
+					align: align,
+				});
+			}
+			
 			x += columnWidths[i];
 		});
 
