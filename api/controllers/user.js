@@ -47,7 +47,7 @@ module.exports.list = async (req, res, next) => {
         })
     }
     catch (e) {
-        console.error(e)
+        
         return res.status(400).json(e)
     }
 }
@@ -206,11 +206,24 @@ module.exports.listAllSellers = async (req, res, next) => {
             cond = {'_id': { $in: [...userInfo.assignedSellers, req.user.id]}}
         }
         const users = await User
-        // .find({role: "SELLER"})
+       
         .find(cond)
-        .select("_id firstName lastName role avatar longitude latitude createdAt updatedAt")
+        .select("_id firstName lastName role avatar longitude latitude createdAt updatedAt lastPosition lastConnected")
         .sort({ created_on: 1 });
-        res.status(200).json({users})
+        
+        const now = new Date();
+        const modifiedUsers = users.map(user => {
+            const mLastConnected = user.lastConnected !== null ? Math.floor((now - new Date(user.lastConnected)) / 60000) : user.updatedAt ? Math.floor((now - new Date(user.updatedAt)) / 60000) : null; // en minutos
+            const mLastPosition = user.lastPosition ? Math.floor((now - new Date(user.lastPosition)) / 60000) : null; // en minutos
+
+            return {
+                ...user._doc,
+                mLastConnected,  // reemplazamos con el tiempo en minutos
+                mLastPosition    // reemplazamos con el tiempo en minutos
+            };
+        });
+
+        res.status(200).json({users: modifiedUsers})
     }
     catch (e) {
         console.error(e)

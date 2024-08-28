@@ -8,5 +8,6 @@ router.get('/get',profilesController.get);
 router.post('/edit',profilesController.edit);
 router.post('/edit-email',profilesController.editEmail);
 router.put('/set-location', passport.authenticate("jwt", { session: false }), profilesController.setLocation);
+router.put('/set-status', passport.authenticate("jwt", { session: false }), profilesController.setStatus);
 router.post('/upload-avatar', passport.authenticate("jwt", { session: false }), uploadMiddleware.upload, profilesController.uploadAvatar);
 module.exports = router;

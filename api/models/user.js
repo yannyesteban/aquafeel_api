@@ -53,7 +53,17 @@ const usersSchema = mongoose.Schema({
     leadFilters: {
         type: Object,
         default: null
-    }      
+    },
+    lastPosition: {
+        type: Date,
+        default: null
+        
+    },  
+    lastConnected: {
+        type: Date,
+        default: null
+        
+    },    
 },
 {timestamps:true})
 

@@ -57,10 +57,30 @@ module.exports.editEmail = async (req, res, next) => {
         return res.status(400).json(e)
     }
 }
+module.exports.setStatus = async (req, res, next) => {
+    try {
+       
+        let lastConnected = new Date();
+        Profile.findByIdAndUpdate(req.user.id, { $set: { lastConnected } }, { new: true }, function (err, result) {
+            if (err)
+                res.status(400).json(err)
+            else
+                res.status(201).json({
+                    message: "User status updated successfully",
+                    profile: result
+                })
+        })
+    }
+    catch (e) {
+       
+        return res.status(400).json(e)
+    }
+}
 module.exports.setLocation = async (req, res, next) => {
     try {
         let { longitude, latitude } = req.body;
-        Profile.findByIdAndUpdate(req.user.id, { $set: { longitude, latitude } }, { new: true }, function (err, result) {
+        let lastPosition = new Date();
+        Profile.findByIdAndUpdate(req.user.id, { $set: { longitude, latitude, lastPosition } }, { new: true }, function (err, result) {
             if (err)
                 res.status(400).json(err)
             else
