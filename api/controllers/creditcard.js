@@ -314,6 +314,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		});
 
 		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", `inline; filename="${credit.firstName + "_" + credit.lastName}.pdf"`);
+
 		doc.pipe(res);
 
 		doc.font("Times-Bold");
@@ -1089,16 +1091,18 @@ function drawTable(
 			}
 			//doc.font("Times-Roman");
 			if(cells[1]) {
+				doc.font("Times-Bold");
+
 				doc.text(cells[0], x + 5, y + 5, {
 					width: columnWidths[i] - 10,
 					align: align,
 					continued: true
 				});
-				doc.font("Times-Bold").text("\n" + cells[1], {
+				doc.font("Times-Roman").text("\n" + cells[1], {
 					width: columnWidths[i] - 10,
 					align: align,
 				});
-				doc.font("Times-Roman");
+				//doc.font("Times-Roman");
 			}else{
 				doc.text(cell, x + 5, y + 5, {
 					width: columnWidths[i] - 10,

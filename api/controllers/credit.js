@@ -434,6 +434,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		});
 
 		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", `inline; filename="${credit.applicant.firstName}_${credit.applicant.lastName}.pdf"`);
 		doc.pipe(res);
 
 		doc.font("Times-Bold");
@@ -460,7 +461,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		});
 		doc.moveDown();
 		doc.fontSize(cellFontSize).text("", startX, rowHeight * 4);
-
+		doc.font("Times-Bold");
 		drawTable(
 			doc,
 			{
@@ -478,7 +479,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[292, 293],
 			rowHeight
 		);
-		
+		doc.font("Times-Roman");
 
 		doc.fontSize(fontSize).text("", startX, rowHeight);
 		const data = {
@@ -609,7 +610,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			rowHeight
 		);
 
-
+		doc.font("Times-Bold");
 		drawTab(
 			doc,
 			{
@@ -628,7 +629,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[bodyWidth],
 			rowHeight
 		);
-
+		doc.font("Times-Roman");
 		drawTable(
 			doc,
 			{
@@ -650,7 +651,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[166, 126, 166, 127],
 			rowHeight
 		);
-
+		doc.font("Times-Bold");
 		drawTable(
 			doc,
 			{
@@ -669,7 +670,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[166+ 126, 166 + 127],
 			rowHeight
 		);
-
+		doc.font("Times-Roman");
 
 		drawTable(
 			doc,
@@ -1349,16 +1350,17 @@ function drawTable(
 			}
 			//doc.font("Times-Roman");
 			if(cells[1]) {
+				doc.font("Times-Bold")
 				doc.text(cells[0], x + 5, y + 5, {
 					width: columnWidths[i] - 10,
 					align: align,
 					continued: true
 				});
-				doc.font("Times-Bold").text("\n" + cells[1], {
+				doc.font("Times-Roman").text("\n" + cells[1], {
 					width: columnWidths[i] - 10,
 					align: align,
 				});
-				doc.font("Times-Roman");
+				//doc.font("Times-Roman");
 			}else{
 				doc.text(cell, x + 5, y + 5, {
 					width: columnWidths[i] - 10,

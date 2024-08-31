@@ -335,6 +335,8 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		});
 
 		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", `inline; filename="${order.buyer1.name}.pdf"`);
+
 		doc.pipe(res);
 
 		doc.font("Times-Bold");
@@ -493,7 +495,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 
 		const data9 = {
 			//headers: [],
-			rows: [[`Other / Promotion: ${order.promotion}`]],
+			rows: [[`Other / Promotion: *${order.promotion}`]],
 		};
 
 		doc.fontSize(cellFontSize);
@@ -510,11 +512,12 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		//doc.fontSize(cellFontSize).text(text1, { align: "center" });
 
 		doc.fontSize(cellFontSize).text("", startX, startY + rowHeight * 12);
+		doc.font("Times-Bold");
 		doc.fontSize(fontTitle).text("INSTALLATION INSTRUCTIONS", {
 			width: 585,
 			align: "center",
 		});
-		
+		doc.font("Times-Roman");
 
 		
 		const data3 = {
@@ -558,13 +561,13 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		);
 
 		//doc.lineJoin("miter").rect(5, 10, 5, 5).stroke();
-
+		doc.font("Times-Bold");
 		doc.fontSize(fontTitle).text("", startX, rowHeight * 17);
 		doc.fontSize(fontTitle).text("Terms or Payment Methods".toUpperCase(), {
 			width: 585,
 			align: "center",
 		});
-
+		doc.font("Times-Roman");
 		const data21 = {
 			//headers: [],
 			rows: [
@@ -826,6 +829,7 @@ function drawTable(
 
 	// Dibujar encabezados y líneas horizontales (si hay encabezados)
 	if (data.headers && data.headers.length > 0) {
+		doc.font("Times-Bold");
 		data.headers.forEach((header, i) => {
 			doc.text(header, x + 5, y + 5, {
 				width: columnWidths[i] - 10,
@@ -833,7 +837,7 @@ function drawTable(
 			});
 			x += columnWidths[i];
 		});
-
+		doc.font("Times-Roman");
 		// Dibujar la línea inferior del encabezado
 		doc
 			.moveTo(startX, y + rowHeight)
@@ -857,16 +861,18 @@ function drawTable(
 			}
 			//doc.font("Times-Roman");
 			if(cells[1]) {
+				doc.font("Times-Bold");
 				doc.text(cells[0], x + 5, y + 5, {
 					width: columnWidths[i] - 10,
 					align: align,
 					continued: true
 				});
-				doc.font("Times-Bold").text(cells[1], {
+				//doc.font("Times-Roman");
+				doc.font("Times-Roman").text(cells[1], {
 					width: columnWidths[i] - 10,
 					align: align,
 				});
-				doc.font("Times-Roman");
+				//doc.font("Times-Roman");
 			}else{
 				doc.text(cell, x + 5, y + 5, {
 					width: columnWidths[i] - 10,
