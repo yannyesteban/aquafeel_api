@@ -80,7 +80,8 @@ module.exports.setLocation = async (req, res, next) => {
     try {
         let { longitude, latitude } = req.body;
         let lastPosition = new Date();
-        Profile.findByIdAndUpdate(req.user.id, { $set: { longitude, latitude, lastPosition } }, { new: true }, function (err, result) {
+        let lastConnected = new Date();
+        Profile.findByIdAndUpdate(req.user.id, { $set: { longitude, latitude, lastPosition, lastConnected } }, { new: true }, function (err, result) {
             if (err)
                 res.status(400).json(err)
             else
