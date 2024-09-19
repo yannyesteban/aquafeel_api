@@ -41,6 +41,11 @@ module.exports.details = async (req, res, next) => {
 module.exports.add = async (req, res, next) => {
 	try {
 		let { name, starting_address, starting_address_long, starting_address_lat, ending_address, ending_address_long, ending_address_lat, leads, user_id } = req.body;
+
+		if(leads[0] && leads[0].id) {
+			leads = leads.map(data => data.id);
+		}
+		
 		let route = new Routes({
 			name: name,
 			starting_address,
@@ -67,6 +72,11 @@ module.exports.add = async (req, res, next) => {
 module.exports.edit = async (req, res, next) => {
 	try {
 		let { id, name, starting_address, starting_address_long, starting_address_lat, ending_address, ending_address_long, ending_address_lat, leads } = req.body;
+
+		if(leads[0] && leads[0].id) {
+			leads = leads.map(data => data.id);
+		}
+
 		let route = await Routes.findByIdAndUpdate(id, { $set: {
 			name: name,
 			starting_address,
