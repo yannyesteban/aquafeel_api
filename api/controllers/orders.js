@@ -637,10 +637,14 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			apr = order.price.APR + " %";
 		} 
 
+		let terms = order.price.terms.terms;
+		if (order.price.terms.unit != "" && order.price.terms.terms == ""){
+			terms = `${order.price.terms.amount} ${order.price.terms.unit}`;
+		}
 		const data5 = {
 			headers: [
 				"Amount to Finance",
-				"Payment Terms",
+				"Terms",
 				"A.P.R ( % )",
 				"Finance Charge",
 				"Total of Payments",
@@ -648,7 +652,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			rows: [
 				[
 					"*" + order.price.toFinance,
-					"*" + `${order.price.terms.amount} ${order.price.terms.unit}`,
+					"*" + terms,
 					"*" + apr,
 					"*" + order.price.finaceCharge,
 					"*" + order.price.totalPayments,

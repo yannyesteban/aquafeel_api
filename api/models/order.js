@@ -48,6 +48,7 @@ const installSchema = new Schema(
 
 const termsSchema = new Schema(
   {
+    terms: { type: String, required: false },
     unit: { type: String, required: false },
     amount: { type: Number, required: false },
   }, { _id: false }
