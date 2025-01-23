@@ -284,7 +284,10 @@ module.exports.pdf = async (req, res, next) => {
 		"Upon signing, you acknowledge you agree to the terms and conditions of this contract. You agreed to all payments and charges and to the sales price appearing bellow.";
 	const DO_NOT_SIGNED =
 		"DO NOT SIGNED THIS CONTRACT UNTILL YOU HAVE READ IT ALL OF THE BLANK SPACES ARE COMPLETED. YOU HAVE THE RIGHT TO RECEIVE A COMPLETE COPY OF THIS CONTRACT. YOU HAVE THE RIGHT TO PREPAY FULL AMOUNT AT ANY TIME AND TO BE NOTIFIED OF THE FULL AMOUNT DUE.";
-	const termsAndConditions = `OTHER TERMS AND CONDITIONS
+		const CASH_PRICE = "CASH PRICE";
+		const FINACED = "FINANCED"
+	
+		const termsAndConditions = `OTHER TERMS AND CONDITIONS
 STATE LAW REQUIRES THAT ANYONE WHO CONTRACTS TO DO CONSTRUCTION WORK TO BE LICENSED BY THE CONTRACTORS STATE LICENSE BOARD IN THE LICENSE CATEGORY IN WHICH THE CONTRACTOR IS GOING TO BE WORKING- IF THE TOTAL PRICE OF THE JOB IS $500 OR MORE (INCLUDING LABOR AND MATERIALS). LICENSED CONTRACTORS ARE REGULATED BY LAWS DESIGNED TO PROTECT THE PUBLIC. IF YOU CONTRACT WITH SOMEONE WHO DOES NOT HAVE A LICENSE, THE CONTRACTORS STATE LICENSE BOARD MAY BE UNABLE TO ASSIST YOU WITH A COMPLAINT. YOUR ONLY REMEDY AGAINST UNLICENSED CONTRACTOR MAY BE IN CIVIL COURT AND YOU MAY BE LIABLE FOR DAMAGES ARISING OUT OF ANY INJURIES TO THE CONTRACTOR OR HIS OR HER EMPLOYEES. YOU MAY CONTACT THE CONTRACTORS STATE LICENSE BOARD TO FIND OUT IF THIS CONTRACTOR HAS A VALID LICENSE. THE BOARD HAS COMPLETE INFORMATION ON THE HISTORY OF LICENSED CONTRACTORS, INCLUDING ANY POSSIBLE SUSPENSIONS, REVOCATIONS, JUDGMENTS, AND CITATIONS. SEARCH IN THE WHITE PAGES FOR CONTRACTORS STATE LICENSE BOARD OFFICE NEAREST TO YOU.
 1. The tittle to the equipment and materials covered in this Contract shall remain the legal property of Aquafeel Solutions, until the equipment and materials are paid in full. You acknowledge that you are giving a security interest in the goods purchased. The Buyer(s) hereby agrees that there is no written agreement or verbal understanding of any kind or nature, with Aquafeel Solutions, or any of its representatives, whereby this Contract, or any part of it is be altered, modified, or varied in any manner whatsoever from the conditions herein. The terms and conditions of this Contract are complete and exclusive statement of the agreements between the parties, constitute the entire agreement, and supersede and cancel all prior or contemporaneous negotiations, statements, and representations. There are no representations, inducements, promises, or agreements, oral or otherwise, with reference to this sale other than expressly set forth herein. If it is not in writing, and approved by employed management personnel at Aquafeel Solutions, it will not be honored.
 I have received a copy of this document:
@@ -302,6 +305,8 @@ Aquafeel Solutions
 230 Capcom Ave Ste. 103, Wake Forest NC 27587 PH (919) 790-5475 • FAX (919) 790-5476
 I hereby cancel this transaction:
 Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Buyer’sSignature:________________________`;
+
+
 
 	const fontSize = 16;
 	const fontTitle = 9;
@@ -600,7 +605,50 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		);
 
 		// Sección: Información de Precios
+
+		doc.font("Times-Bold");
+		doc.fontSize(cellFontSize).text("", startX, startY + 165 + rowHeight * 12);
+		doc.fontSize(fontTitle).text(CASH_PRICE, {
+			width: 585,
+			align: "center",
+		});
+		doc.fontSize(cellFontSize).text("", startX, startY + 231 + rowHeight * 12);
+		doc.fontSize(fontTitle).text(FINACED, {
+			width: 585,
+			align: "center",
+		});
+
+		doc.font("Times-Roman");
+
+
 		const data4 = {
+			headers: [
+				"Price",
+				"Downpayment",
+				"Installation",
+				"Taxes",
+			],
+			rows: [
+				[
+					"*"+ order.price.cashPrice,
+					"*" + order.price.downPayment,
+					"*" + order.price.installation,
+					"*" + order.price.taxes,
+					
+				],
+			],
+		};
+		doc.fontSize(cellFontSize);
+		drawTable(
+			doc,
+			data4,
+			startX,
+			startY + rowHeight * 20,
+			[147, 146, 146, 146],
+			rowHeight,
+			"center"
+		)
+		/*const data4 = {
 			headers: [
 				"Cash Price",
 				"Installation",
@@ -629,7 +677,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[100, 85, 80, 100, 100, 120],
 			rowHeight,
 			"center"
-		);
+		);*/
 
 
 		let apr = " ";
@@ -641,7 +689,34 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 		if (order.price.terms.unit != "" && order.price.terms.terms == ""){
 			terms = `${order.price.terms.amount} ${order.price.terms.unit}`;
 		}
+
 		const data5 = {
+			headers: [
+				"Amount to Finance",
+				"Terms",
+				"A.P.R ( % )",
+				
+			],
+			rows: [
+				[
+					"*" + order.price.toFinance,
+					"*" + terms,
+					"*" + apr,
+					
+				],
+			],
+		};
+		doc.fontSize(cellFontSize);
+		drawTable(
+			doc,
+			data5,
+			startX,
+			startY + rowHeight * 23,
+			[195, 195, 195],
+			rowHeight,
+			"center"
+		);
+		/*const data5 = {
 			headers: [
 				"Amount to Finance",
 				"Terms",
@@ -668,7 +743,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			[105, 120, 120, 120, 120],
 			rowHeight,
 			"center"
-		);
+		);*/
 
 		doc.fontSize(cellFontSize).text("", startX, rowHeight * 27);
 		doc.fontSize(noteFontSize).text(DO_NOT_SIGNED.toUpperCase(), {
