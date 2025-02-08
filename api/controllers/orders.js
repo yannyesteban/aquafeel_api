@@ -627,6 +627,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				"Downpayment",
 				"Installation",
 				"Taxes",
+				"Total Cash Price",
 			],
 			rows: [
 				[
@@ -634,6 +635,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					"*" + order.price.downPayment,
 					"*" + order.price.installation,
 					"*" + order.price.taxes,
+					"*" + order.price.totalCashPrice,
 					
 				],
 			],
@@ -644,7 +646,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			data4,
 			startX,
 			startY + rowHeight * 20,
-			[147, 146, 146, 146],
+			[117, 117, 117, 117, 117],
 			rowHeight,
 			"center"
 		)
@@ -695,6 +697,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 				"Amount to Finance",
 				"Terms",
 				"A.P.R ( % )",
+				"Final Price"
 				
 			],
 			rows: [
@@ -702,6 +705,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 					"*" + order.price.toFinance,
 					"*" + terms,
 					"*" + apr,
+					"*" + order.price.totalPayments,
 					
 				],
 			],
@@ -712,7 +716,7 @@ Date:___/___/___ Buyer’sSignature:________________________ Date:___/___/___ Bu
 			data5,
 			startX,
 			startY + rowHeight * 23,
-			[195, 195, 195],
+			[147, 146, 146, 146],
 			rowHeight,
 			"center"
 		);
